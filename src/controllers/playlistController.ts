@@ -4,17 +4,20 @@ import { ApiError } from '../common/errors';
 
 export const suggestPlaylist = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { favoriteSong, mood } = req.query;
+        const { favoriteArtist, mood } = req.query;
 
-        if (!favoriteSong && !mood) {
+        if (!favoriteArtist && !mood) {
             throw new ApiError(400, 'Please provide either a favorite song or mood.');
         }
 
         let prompt: string;
-        if (favoriteSong) {
-            prompt = `Suggest a playlist based on the song "${favoriteSong}".`;
+        if (favoriteArtist && mood){
+            prompt = `Suggest a song based on the artist "${favoriteArtist}" and for the mood "${mood}". only artist - song name`;
+        }
+        else if (favoriteArtist) {
+            prompt = `Suggest a song based on the artist "${favoriteArtist}". only artist - song name`;
         } else {
-            prompt = `Suggest a playlist for the mood "${mood}".`;
+            prompt = `Suggest a song for the mood "${mood}". only artist - song name`;
         }
 
         const suggestion = await geminiService.generatePlaylistSuggestion(prompt);
