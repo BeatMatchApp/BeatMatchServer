@@ -2,19 +2,34 @@ import { Request, Response } from 'express';
 import * as geminiService from '../services/gemini-service';
 import { ApiError } from '../common/errors';
 
+// TODO: if you have an idea to not write interface GeminiParams both on client and server tell me
+export interface GeminiParams {
+    favoriteArtist?: string;
+    mood?: string;
+  }
+
 export const suggestPlaylist = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { favoriteSong, mood } = req.query;
+        const { geminiParams } = req.query;
 
-        if (!favoriteSong && !mood) {
+        if (!geminiParams ){
+        throw new Error("error while saving")
+        }
+
+        const { favoriteArtist, mood } = geminiParams as GeminiParams;
+
+        if (!favoriteArtist && !mood) {
             throw new ApiError(400, 'Please provide either a favorite song or mood.');
         }
 
         let prompt: string;
-        if (favoriteSong) {
-            prompt = `Suggest a playlist based on the song "${favoriteSong}".`;
+        if (favoriteArtist && mood){
+            prompt = `Suggest a song based on the artist "${favoriteArtist}" and for the mood "${mood}". only artist - song name`;
+        }
+        else if (favoriteArtist) {
+            prompt = `Suggest a song based on the artist "${favoriteArtist}". only artist - song name`;
         } else {
-            prompt = `Suggest a playlist for the mood "${mood}".`;
+            prompt = `Suggest a song for the mood "${mood}". only artist - song name`;
         }
 
         const suggestion = await geminiService.generatePlaylistSuggestion(prompt);
