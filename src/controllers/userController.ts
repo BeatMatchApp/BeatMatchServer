@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
 
+interface UserDetails {
+  name: string;
+  email: string;
+  password: string;
+  birthDate: string; // ISO date string
+}
+
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    if (!req.body || !req.body.userDetails) {
+      res.status(400).json({ error: "Missing user details." });
+      return;
+    }
 
-    if (!email || !password) {
-      res.status(400).json({ error: "Email and password are required." });
+    const { email, password, name, birthDate }: UserDetails =
+      req.body.userDetails;
+
+    if (!email || !password || !name || !birthDate) {
+      res
+        .status(400)
+        .json({ error: "Missing Fields.", name, email, password, birthDate });
       return;
     }
 
