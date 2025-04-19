@@ -1,6 +1,4 @@
-import { Knex } from "knex";
-
-const config: { [key: string]: Knex.Config } = {
+module.exports = {
   development: {
     client: "pg",
     connection: {
@@ -29,5 +27,3 @@ const config: { [key: string]: Knex.Config } = {
     },
   },
 };
-
-export default config;
