@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use("/api/playlist", playlistRoutes);
 
-app.post("/user", createNewUser);
+app.post("/user", createNewUser); // delete later on
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);
