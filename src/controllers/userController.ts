@@ -39,6 +39,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       email,
       name,
       birthDate: new Date(birthDate),
+      password,
     });
 
     res
@@ -52,14 +53,33 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const createNewUser = async () => {
-  const newUser = await UsersDAL.createUser({
-    id: randomUUID(),
-    email: "test@example.com",
-    name: "Test User",
-    birthDate: new Date("2000-01-01"),
-    country: "USA",
-  });
+export const login = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.body || !req.body.userDetails) {
+      res.status(400).json({ error: "Missing user details." });
+      return;
+    }
 
-  console.log("user created:", newUser);
+    const { email, password }: UserDetails = req.body.userDetails;
+
+    if (!email || !password) {
+      res.status(400).json({ error: "Missing Fields.", email, password });
+      return;
+    }
+
+    const user = await UsersDAL.getUserByEmailAndPassword(email, password);
+
+    // Here you would typically check the hashed password against the stored hash
+    // For now, we'll just return a success message
+
+    if (!user) {
+      res.status(401).json({ error: "Invalid email or password." });
+      return;
+    }
+
+    res.status(200).json({ message: "User logged in successfully!" });
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    res.status(500).json({ error: "An error occurred while logging in." });
+  }
 };

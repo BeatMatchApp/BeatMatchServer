@@ -12,6 +12,10 @@ const UsersDAL = {
     return await dataAccess(USERS_TABLE).where({ id }).first();
   },
 
+  async getUserByEmailAndPassword(email: string, password: string) {
+    return await dataAccess(USERS_TABLE).where({ email, password }).first();
+  },
+
   async createUser(user: User) {
     return await dataAccess(USERS_TABLE).insert(user).returning("*");
   },

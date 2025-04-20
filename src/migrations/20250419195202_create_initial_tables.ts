@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
       table.text("email").notNullable();
       table.text("name").notNullable();
       table.date("birthDate");
+      table.text("password").notNullable();
       table.text("country");
       table
         .timestamp("creationTime", { useTz: true })
