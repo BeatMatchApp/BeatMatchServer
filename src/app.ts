@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/playlist", playlistRoutes);
-app.use("/api/user", userRoutes);
+app.use("/user", userRoutes);
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);

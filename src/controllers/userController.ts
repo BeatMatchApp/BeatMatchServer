@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { randomUUID } from "crypto";
 import { UsersDAL } from "../dal/users";
+import { isValidDateString } from "../common/isValidDateString";
 interface UserDetails {
   name: string;
   email: string;
@@ -25,10 +26,24 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    if (!isValidDateString(birthDate)) {
+      res.status(400).json({ error: "Invalid date format." });
+      return;
+    }
+
     // Here you would typically hash the password and save the user to a database
     // For now, we'll just return a success message
 
-    res.status(201).json({ message: "User registered successfully!" });
+    const newUser = await UsersDAL.createUser({
+      id: randomUUID(),
+      email,
+      name,
+      birthDate: new Date(birthDate),
+    });
+
+    res
+      .status(201)
+      .json({ message: "User registered successfully!", user: newUser });
   } catch (error) {
     console.error("Error registering user:", error);
     res
