@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { UsersDAL } from "../dal/users";
 import { isValidDateString } from "../common/isValidDateString";
 import { generateUserUUID } from "../common/userUUID";
+import { HOUR } from "../consts/general";
 interface UserDetails {
   name: string;
   email: string;
@@ -42,12 +43,27 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     const newUser = await UsersDAL.createUser({
-      id: generateUserUUID(email),
+      id: newUserId,
       email,
       name,
       birthDate: new Date(birthDate),
       password,
     });
+
+    res.cookie(
+      "user_credantials",
+      {
+        id: newUserId,
+        spotify_access_token: req.cookies.spotify_access_token,
+        spotify_refresh_token: req.cookies.spotify_refresh_token,
+      },
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: HOUR,
+      }
+    );
 
     res
       .status(201)
