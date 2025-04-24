@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { randomUUID } from "crypto";
 import { UsersDAL } from "../dal/users";
 import { isValidDateString } from "../common/isValidDateString";
 import { generateUserUUID } from "../common/userUUID";
@@ -52,11 +51,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     res.cookie(
       "user_credantials",
-      {
+      JSON.stringify({
         id: newUserId,
         spotify_access_token: req.cookies.spotify_access_token,
         spotify_refresh_token: req.cookies.spotify_refresh_token,
-      },
+      }),
       {
         httpOnly: true,
         secure: true,
