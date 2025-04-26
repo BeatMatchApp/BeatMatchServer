@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { User } from '../models';
 import { dataAccess } from '../dal/dataAccess';
+import { generateUserUUID } from '../common/userUUID';
 
 const JWT_EXPIRATION_MILL = process.env.JWT_EXPIRATION_MILL || '3600000';
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -26,7 +27,7 @@ const register = async (req: Request, res: Response) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await dataAccess('public.users')
-      .insert({ email, name, birthDate, password: hashedPassword, country })
+      .insert({ id: generateUserUUID(email), email, name, birthDate, password: hashedPassword, country })
       .returning('*')
       .then(rows => rows[0]);
     const { accessToken, refreshToken } = generateTokens(user);
@@ -51,6 +52,7 @@ const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid email' });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid password' });
     }
