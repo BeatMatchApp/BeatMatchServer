@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { UsersDAL } from "./dal/users";
 
 interface UserCredentials {
   id: string;
@@ -18,4 +19,17 @@ export const loginHandler = async (
 
   const parsedCredentials = decodeURIComponent(credentialsCookie);
   const userCredentials: UserCredentials = JSON.parse(parsedCredentials);
+
+  if (!userCredentials?.id) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const user = await UsersDAL.getUserById(userCredentials.id);
+  if (!user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  res.status(200).json({ user });
 };

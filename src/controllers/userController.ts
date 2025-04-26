@@ -97,7 +97,22 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    res.status(200).json({ message: "User logged in successfully!" });
+    res.cookie(
+      "user_credantials",
+      JSON.stringify({
+        id: user.id,
+        spotify_access_token: req.cookies.spotify_access_token,
+        spotify_refresh_token: req.cookies.spotify_refresh_token,
+      }),
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: HOUR,
+      }
+    );
+
+    res.status(200).json({ message: "User logged in successfully!", user });
   } catch (error) {
     console.error("Error logging in user:", error);
     res.status(500).json({ message: "An error occurred while logging in." });
