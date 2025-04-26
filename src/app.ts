@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true }));
 
 app.use("/api/playlist", credentialsMiddleware, playlistRoutes);
-app.use("/user", credentialsMiddleware, userRoutes);
+app.use("/user", userRoutes);
 app.use("/login", credentialsMiddleware, loginHandler);
 
 app.listen(config.port, () => {

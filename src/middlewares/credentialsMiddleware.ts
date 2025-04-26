@@ -1,8 +1,8 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
 import { CustomRequest, UserCredentials } from "../models";
 
 export const credentialsMiddleware = (
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -19,7 +19,7 @@ export const credentialsMiddleware = (
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    req.userCredentials = userCredentials;
+    (req as CustomRequest).userCredentials = userCredentials;
 
     next();
   } catch (error) {
