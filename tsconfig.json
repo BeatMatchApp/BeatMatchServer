@@ -8,6 +8,7 @@
     "noImplicitAny": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],

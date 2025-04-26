@@ -7,14 +7,14 @@ import authRoutes from "./routes/authRoutes";
 const cors = require("cors");
 const app = express();
 
+app.use(express.json());
+app.use(cors());
+
 app.get('/', (req, res) => {
     res.send('connected!');
 });
 
-app.use(cors());
-app.use(express.json());
-
-app.use("/auth", authRoutes)
+app.use("/auth", authRoutes);
 app.use("/api/playlist", playlistRoutes);
 app.use("/user", userRoutes);
 
