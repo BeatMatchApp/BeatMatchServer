@@ -1,35 +1,18 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { UsersDAL } from "./dal/users";
-
-interface UserCredentials {
-  id: string;
-  spotify_access_token: string;
-  spotify_refresh_token: string;
-}
+import { CustomRequest, UserCredentials } from "./models";
 
 export const loginHandler = async (
-  req: Request,
+  req: CustomRequest,
   res: Response
 ): Promise<void> => {
-  const credentialsCookie = req.cookies.user_credentials;
-  if (!credentialsCookie) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+  if (req.userCredentials) {
+    const user = await UsersDAL.getUserById(req.userCredentials.id);
+    if (!user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    res.status(200).json({ user });
   }
-
-  const parsedCredentials = decodeURIComponent(credentialsCookie);
-  const userCredentials: UserCredentials = JSON.parse(parsedCredentials);
-
-  if (!userCredentials?.id) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  const user = await UsersDAL.getUserById(userCredentials.id);
-  if (!user) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-
-  res.status(200).json({ user });
 };
