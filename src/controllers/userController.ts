@@ -50,7 +50,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     res.cookie(
-      "user_credantials",
+      "user_credentials",
       JSON.stringify({
         id: newUserId,
         spotify_access_token: req.cookies.spotify_access_token,
@@ -98,7 +98,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.cookie(
-      "user_credantials",
+      "user_credentials",
       JSON.stringify({
         id: user.id,
         spotify_access_token: req.cookies.spotify_access_token,

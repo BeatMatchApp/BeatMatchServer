@@ -11,7 +11,7 @@ export const loginHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const credentialsCookie = req.cookies.user_credantials;
+  const credentialsCookie = req.cookies.user_credentials;
   if (!credentialsCookie) {
     res.status(401).json({ message: "Unauthorized" });
     return;
