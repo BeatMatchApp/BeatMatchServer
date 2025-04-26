@@ -29,6 +29,10 @@ const generateTokens = (user: User) => {
 const register = async (req, res) => {
   const { email, name, birthDate, password, country } = req;
 
+  if (!email || !name || !birthDate || !password || !country) {
+    throw new Error('not all user param provided');
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const [user] = await knex('users').insert({
@@ -46,6 +50,11 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new Error('no email or password provided');
+  }
+  
   const [user] = await knex('users').where({ email });
 
   if (!user) {
@@ -70,6 +79,11 @@ const logout = () => {
 const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      throw new Error('no refreshToken provided');
+    }
+
     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET as string) as { id: string, email: string };
 
     const [user] = await knex('users').where({ id: decoded.id });
