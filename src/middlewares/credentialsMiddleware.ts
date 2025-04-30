@@ -1,5 +1,4 @@
 import { Response, NextFunction, Request } from "express";
-import { CustomRequest, UserCredentials } from "../models";
 import { parseCredentialsCookie } from "../common/cookieParser";
 
 export const credentialsMiddleware = (
@@ -20,7 +19,7 @@ export const credentialsMiddleware = (
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    (req as CustomRequest).userCredentials = userCredentials;
+    req.userCredentials = userCredentials;
 
     next();
   } catch (error) {
