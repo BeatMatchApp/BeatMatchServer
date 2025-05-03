@@ -27,28 +27,3 @@ export const createAuthCookie = (
     maxAge: HOUR,
   });
 };
-
-export const refreshToken = (  
-  req: Request,
-  res: Response,
-  userId: string,
-  userEmail: string
-) => {
-  const refreshToken = req.cookies.refresh;
-  if (!refreshToken) return res.sendStatus(401);
-  
-  jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, decoded: jwt.JwtPayload | string | undefined) => {
-    if (err) return res.sendStatus(401);
-    try {
-      const { email, password} = decoded as jwt.JwtPayload;
-      const user = await UsersDAL.getUserByEmailAndPassword(email, password);
-      if (!user) return res.sendStatus(401);
-
-      createAuthCookie( req, res, userId, userEmail)
-
-      return res.sendStatus(200);
-    } catch (err) {
-      res.status(401).send(err.message);
-    }
-  });
-}
