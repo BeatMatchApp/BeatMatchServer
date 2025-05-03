@@ -14,7 +14,7 @@ const UsersDAL = {
   },
 
   async getUserByEmailAndPassword(email: string, password: string) {
-    const user = await dataAccess(USERS_TABLE).where({ email }).first();
+    const user: User = await dataAccess(USERS_TABLE).where({ email }).first();
 
     if (!user) {
       return undefined;
