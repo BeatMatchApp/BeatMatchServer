@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
-
+import { JWT_REFRESH_SECRET } from "../consts/general";
+import jwt from 'jsonwebtoken';
 export interface UserDetails {
   name: string;
   email: string;
@@ -11,7 +12,7 @@ export interface UserDetails {
 export class UserController {
   constructor() {}
 }
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (req: Request, res: Response) => {
   try {
     if (!req.body || !req.body.userDetails) {
       res.status(400).json({ message: "Missing user details." });
@@ -35,7 +36,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response) => {
   try {
     if (!req.body || !req.body.userDetails) {
       res.status(400).json({ message: "Missing user details." });
@@ -54,4 +55,21 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.error("Error logging in user:", error);
     res.status(500).json({ message: "An error occurred while logging in." });
   }
+};
+
+export const refreshAuthToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refresh;
+  if (!refreshToken) return res.sendStatus(401);
+  
+  jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, decoded: jwt.JwtPayload | string | undefined) => {
+    if (err) return res.sendStatus(401);
+    const { email, password} = decoded as jwt.JwtPayload;
+    login(email, password);
+  });  
+};
+
+export const logout = (_req: Request, res: Response) => {
+  res.clearCookie("refresh");
+  res.clearCookie("access");
+  return res.status(200).json({ message: 'Logged out successfully' });
 };

@@ -4,6 +4,7 @@ import { generateUserUUID } from "../common/userUUID";
 import { UsersDAL } from "../dal/users";
 import { UserDetails } from "../controllers/userController";
 import { createCredentialsCookie } from "../services/createCredentialsCookie";
+import { createAuthCookie } from "../services/createAuthCookie";
 
 const register = async (req: Request, res: Response): Promise<void> => {
   const { email, birthDate }: UserDetails = req.body.userDetails;
@@ -29,6 +30,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
   });
 
   createCredentialsCookie(req, res, newUserId);
+  createAuthCookie(req, res, newUserId, email);
 
   res
     .status(201)
@@ -46,6 +48,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 
   createCredentialsCookie(req, res, user.id);
+  createAuthCookie(req, res, user.id, email);
 
   res.status(200).json({ message: "User logged in successfully!", user });
 };
