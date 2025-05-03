@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HOUR, JWT_REFRESH_SECRET, JWT_SECRET } from "../consts/general";
+import { ACCESS_COOKIE, HOUR, JWT_REFRESH_SECRET, JWT_SECRET, REFRESH_COOKIE } from "../consts/general";
 import jwt, { SignOptions } from 'jsonwebtoken';
 
 export const createAuthCookie = (
@@ -13,13 +13,13 @@ export const createAuthCookie = (
   const accessToken = jwt.sign(payload, JWT_SECRET, options);
   const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, options);
 
-  res.cookie("access", accessToken, {
+  res.cookie(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     maxAge: HOUR,
   });
-  res.cookie("refresh", refreshToken, {
+  res.cookie(REFRESH_COOKIE, refreshToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",

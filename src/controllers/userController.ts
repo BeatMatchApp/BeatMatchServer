@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
-import { JWT_REFRESH_SECRET } from "../consts/general";
+import { ACCESS_COOKIE, JWT_REFRESH_SECRET, REFRESH_COOKIE } from "../consts/general";
 import jwt from 'jsonwebtoken';
 export interface UserDetails {
   name: string;
@@ -69,7 +69,7 @@ export const refreshAuthToken = async (req: Request, res: Response) => {
 };
 
 export const logout = (_req: Request, res: Response) => {
-  res.clearCookie("refresh");
-  res.clearCookie("access");
+  res.clearCookie(REFRESH_COOKIE);
+  res.clearCookie(ACCESS_COOKIE);
   return res.status(200).json({ message: 'Logged out successfully' });
 };
