@@ -59,10 +59,10 @@ export const login = async (req: Request, res: Response) => {
 
 export const refreshAuthToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh;
-  if (!refreshToken) return res.sendStatus(401);
+  if (!refreshToken) return res.sendStatus(403);
   
   jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, decoded: jwt.JwtPayload | string | undefined) => {
-    if (err) return res.sendStatus(401);
+    if (err) return res.sendStatus(403);
     const { email, password} = decoded as jwt.JwtPayload;
     login(email, password);
   });  
