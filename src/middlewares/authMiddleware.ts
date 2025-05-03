@@ -2,12 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../consts/general";
 
-export interface AuthRequest extends Request {
-  user?: { id: string };
-}
-
 const authMiddleware = (
-    req: AuthRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
