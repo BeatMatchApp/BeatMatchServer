@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { HOUR, JWT_REFRESH_SECRET, JWT_SECRET } from "../consts/general";
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { UsersDAL } from "../dal/users";
 
 export const createAuthCookie = (
   req: Request,
