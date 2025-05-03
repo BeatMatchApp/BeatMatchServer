@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
-  user?: { _id: string };
+  user?: { id: string };
 }
 
 const authMiddleware = (
@@ -14,7 +14,7 @@ const authMiddleware = (
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, process.env.JWT_SECRET!, (err, user) => {
     if (err) return res.sendStatus(401);
-    req.user = user as { _id: string };
+    req.user = user as { id: string };
     next();
   });
 };
