@@ -1,5 +1,6 @@
 import { User } from "../models";
 import { dataAccess } from "./dataAccess";
+import bcrypt from 'bcrypt';
 
 const USERS_TABLE = "users";
 
@@ -13,7 +14,18 @@ const UsersDAL = {
   },
 
   async getUserByEmailAndPassword(email: string, password: string) {
-    return await dataAccess(USERS_TABLE).where({ email, password }).first();
+    const user = await dataAccess(USERS_TABLE).where({ email }).first();
+
+    if (!user) {
+      return undefined;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      return user;
+    } else {
+      return undefined;
+    }
   },
 
   async createUser(user: User) {
