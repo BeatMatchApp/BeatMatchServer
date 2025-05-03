@@ -11,7 +11,7 @@ const authMiddleware = (
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(401);
-    req.user = user as { id: string };
+    req.user = user;
     next();
   });
 };
