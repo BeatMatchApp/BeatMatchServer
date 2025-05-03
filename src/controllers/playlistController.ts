@@ -1,22 +1,16 @@
 import { Request, Response } from 'express';
-import * as geminiService from '../services/gemini-service';
+import * as openAiService from '../services/openAiService';
 import { ApiError } from '../common/errors';
 
 // TODO: if you have an idea to not write interface GeminiParams both on client and server tell me
-export interface GeminiParams {
+export interface SuggestPlaylistRequestParams {
     favoriteArtist?: string;
     mood?: string;
   }
 
 export const suggestPlaylist = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { geminiParams } = req.query;
-
-        if (!geminiParams ){
-        throw new Error("error while saving")
-        }
-
-        const { favoriteArtist, mood } = geminiParams as GeminiParams;
+        const { favoriteArtist, mood } = req.query as SuggestPlaylistRequestParams;
 
         if (!favoriteArtist && !mood) {
             throw new ApiError(400, 'Please provide either a favorite song or mood.');
@@ -32,7 +26,10 @@ export const suggestPlaylist = async (req: Request, res: Response): Promise<void
             prompt = `Suggest a song for the mood "${mood}". only artist - song name`;
         }
 
-        const suggestion = await geminiService.generatePlaylistSuggestion(prompt);
+        const suggestion = await openAiService.getAIResponse(
+            prompt,
+            'You are a helpful assistant that generates music playlist suggestions based on user preferences and moods.'
+        );
         res.json({ suggestion });
     } catch (error) {
         if (error instanceof ApiError) {
