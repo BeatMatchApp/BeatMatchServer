@@ -3,6 +3,9 @@ import * as UserBl from "../bls/userBl";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
+import { UsersDAL } from "../dal/users";
+import { createAuthCookie } from "../services/createAuthCookie";
+
 export interface UserDetails {
   name: string;
   email: string;
@@ -62,15 +65,22 @@ export const refreshAuthToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh;
   if (!refreshToken) return res.sendStatus(403);
 
-  jwt.verify(
-    refreshToken,
-    config.jwtRefreshSecret,
-    async (err, decoded: jwt.JwtPayload | string | undefined) => {
-      if (err) return res.sendStatus(403);
-      const { email, password } = decoded as jwt.JwtPayload;
-      login(email, password);
+  jwt.verify(refreshToken, config.jwtRefreshSecret, async (err, decoded) => {
+    if (err || typeof decoded !== "object" || !decoded.email || !decoded.id) {
+      return res.sendStatus(403);
     }
-  );
+
+    const { id, email } = decoded as jwt.JwtPayload;
+
+    const user = await UsersDAL.getUserById(id);
+    if (!user || user.email !== email) {
+      return res.sendStatus(403);
+    }
+
+    createAuthCookie(req, res, id, email);
+
+    return res.status(200).json({ message: "Token refreshed successfully!" });
+  });
 };
 
 export const logout = (_req: Request, res: Response) => {
