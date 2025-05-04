@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
-import { ACCESS_COOKIE, JWT_REFRESH_SECRET, REFRESH_COOKIE } from "../consts/general";
-import jwt from 'jsonwebtoken';
+import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
+import jwt from "jsonwebtoken";
+import config from "../config/config";
 export interface UserDetails {
   name: string;
   email: string;
@@ -60,16 +61,20 @@ export const login = async (req: Request, res: Response) => {
 export const refreshAuthToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh;
   if (!refreshToken) return res.sendStatus(403);
-  
-  jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, decoded: jwt.JwtPayload | string | undefined) => {
-    if (err) return res.sendStatus(403);
-    const { email, password} = decoded as jwt.JwtPayload;
-    login(email, password);
-  });  
+
+  jwt.verify(
+    refreshToken,
+    config.jwtRefreshSecret,
+    async (err, decoded: jwt.JwtPayload | string | undefined) => {
+      if (err) return res.sendStatus(403);
+      const { email, password } = decoded as jwt.JwtPayload;
+      login(email, password);
+    }
+  );
 };
 
 export const logout = (_req: Request, res: Response) => {
   res.clearCookie(REFRESH_COOKIE);
   res.clearCookie(ACCESS_COOKIE);
-  return res.status(200).json({ message: 'Logged out successfully' });
+  return res.status(200).json({ message: "Logged out successfully" });
 };

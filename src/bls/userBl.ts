@@ -43,7 +43,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
   const user = await UsersDAL.getUserByEmailAndPassword(email, password);
 
   if (!user) {
-    res.status(401).json({ message: "Invalid email or password." });
+    res.status(500).json({ message: "Invalid email or password." });
     return;
   }
 

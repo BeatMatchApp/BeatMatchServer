@@ -7,8 +7,8 @@ import authMiddleware from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.use("/api/playlist", credentialsMiddleware, authMiddleware, playlistRoutes);
-router.use("/api/user", userRoutes);
-router.use("/api/login", credentialsMiddleware, loginHandler);
+router.use("/playlist", credentialsMiddleware, authMiddleware, playlistRoutes);
+router.use("/user", userRoutes);
+router.use("/login", credentialsMiddleware, loginHandler);
 
 export default router;

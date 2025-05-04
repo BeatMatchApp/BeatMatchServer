@@ -1,6 +1,6 @@
 import { User } from "../models";
 import { dataAccess } from "./dataAccess";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 const USERS_TABLE = "users";
 
@@ -29,6 +29,8 @@ const UsersDAL = {
   },
 
   async createUser(user: User) {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
     return await dataAccess(USERS_TABLE).insert(user).returning("*");
   },
 
