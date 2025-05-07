@@ -28,7 +28,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
     birthDate: new Date(birthDate),
   });
 
-  // createCredentialsCookie(req, res, newUserId);
   createAuthCookie(req, res, newUserId, email);
 
   res
@@ -46,7 +45,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // createCredentialsCookie(req, res, user.id);
   createAuthCookie(req, res, user.id, email);
 
   res.status(200).json({ message: "User logged in successfully!", user });

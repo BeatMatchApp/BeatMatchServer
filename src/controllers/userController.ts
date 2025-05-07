@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config/config";
 import { UsersDAL } from "../dal/users";
 import { createAuthCookie } from "../services/createAuthCookie";
+import { User } from "../models";
 
 export interface UserDetails {
   name: string;
@@ -61,6 +62,14 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+const isJwtValueValid = (jwtValue: JwtPayload | undefined) => {
+  return !jwtValue || !jwtValue.id || !jwtValue.email;
+};
+
+const isUserVerified = (user: User | undefined, email: string) => {
+  return !user || user.email !== email;
+};
+
 export const refreshAuthToken = async (
   req: Request,
   res: Response
@@ -71,9 +80,9 @@ export const refreshAuthToken = async (
     const decodedJwt = jwt.verify(
       refreshToken,
       config.jwtRefreshSecret
-    ) as jwt.JwtPayload;
+    ) as JwtPayload;
 
-    if (!decodedJwt || !decodedJwt.id || !decodedJwt.email || true) {
+    if (isJwtValueValid(decodedJwt)) {
       res.sendStatus(401).json({ message: "Invalid refresh token." });
     }
 
@@ -81,7 +90,7 @@ export const refreshAuthToken = async (
 
     const user = await UsersDAL.getUserById(id);
 
-    if (!user || user.email !== email) {
+    if (isUserVerified(user, email)) {
       res.sendStatus(401).json({ message: "User verification failed." });
     }
 
