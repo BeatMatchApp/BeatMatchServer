@@ -11,6 +11,7 @@ export const loginHandler = async (
 
     if (!user) {
       res.sendStatus(401).json({ message: "Unauthorized" });
+      return;
     }
 
     res.sendStatus(200).json({ user });
