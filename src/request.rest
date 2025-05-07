@@ -1,0 +1,29 @@
+
+### login user
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+    "userDetails": {
+        "email": "carmeltest@gmail.com",
+        "password": "testpassword"
+    }
+}
+
+### Register user
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+    "userDetails": {
+        "name": "testuser",
+        "password": "testpassword",
+        "email": "carmeltest@gmail.com",
+        "birthDate":"01/01/2002"
+    }
+    
+}
+
+### login handler
+POST http://localhost:3000/login
+Content-Type: application/json
