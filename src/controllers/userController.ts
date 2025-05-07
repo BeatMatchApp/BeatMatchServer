@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
+import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
+import jwt from "jsonwebtoken";
+import config from "../config/config";
+import { UsersDAL } from "../dal/users";
+import { createAuthCookie } from "../services/createAuthCookie";
 
 export interface UserDetails {
   name: string;
@@ -11,7 +16,7 @@ export interface UserDetails {
 export class UserController {
   constructor() {}
 }
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (req: Request, res: Response) => {
   try {
     if (!req.body || !req.body.userDetails) {
       res.status(400).json({ message: "Missing user details." });
@@ -35,7 +40,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response) => {
   try {
     if (!req.body || !req.body.userDetails) {
       res.status(400).json({ message: "Missing user details." });
@@ -54,4 +59,32 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.error("Error logging in user:", error);
     res.status(500).json({ message: "An error occurred while logging in." });
   }
+};
+
+export const refreshAuthToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refresh;
+  if (!refreshToken) return res.sendStatus(403);
+
+  jwt.verify(refreshToken, config.jwtRefreshSecret, async (err, decoded) => {
+    if (err || typeof decoded !== "object" || !decoded.email || !decoded.id) {
+      return res.sendStatus(403);
+    }
+
+    const { id, email } = decoded as jwt.JwtPayload;
+
+    const user = await UsersDAL.getUserById(id);
+    if (!user || user.email !== email) {
+      return res.sendStatus(403);
+    }
+
+    createAuthCookie(req, res, id, email);
+
+    return res.status(200).json({ message: "Token refreshed successfully!" });
+  });
+};
+
+export const logout = (_req: Request, res: Response) => {
+  res.clearCookie(REFRESH_COOKIE);
+  res.clearCookie(ACCESS_COOKIE);
+  return res.status(200).json({ message: "Logged out successfully" });
 };

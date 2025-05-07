@@ -5,4 +5,4 @@ const router = express.Router();
 
 router.get('/suggestion', playlistController.suggestPlaylist);
 
-export default router;
+export default router;  
