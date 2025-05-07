@@ -84,6 +84,7 @@ export const refreshAuthToken = async (
 
     if (isJwtValueValid(decodedJwt)) {
       res.sendStatus(401).json({ message: "Invalid refresh token." });
+      return;
     }
 
     const { id, email } = decodedJwt;
@@ -92,6 +93,7 @@ export const refreshAuthToken = async (
 
     if (isUserVerified(user, email)) {
       res.sendStatus(401).json({ message: "User verification failed." });
+      return;
     }
 
     const accessToken = createAuthCookie(req, res, id, email);
