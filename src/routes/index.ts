@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.use("/playlist", authMiddleware, playlistRoutes);
 router.use("/user", userRoutes);
-router.use("/login", loginHandler);
+router.use("/login", authMiddleware, loginHandler);
 
 export default router;
