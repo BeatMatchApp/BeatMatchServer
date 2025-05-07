@@ -6,17 +6,8 @@ import authMiddleware from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.use(
-  "/playlist",
-  //   spotifyServiceMiddleware,
-  authMiddleware,
-  playlistRoutes
-);
+router.use("/playlist", authMiddleware, playlistRoutes);
 router.use("/user", userRoutes);
-router.use(
-  "/login",
-  // spotifyServiceMiddleware,
-  loginHandler
-);
+router.use("/login", loginHandler);
 
 export default router;

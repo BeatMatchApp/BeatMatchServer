@@ -8,7 +8,7 @@ export const createAuthCookie = (
   res: Response,
   userId: string,
   userEmail: string
-) => {
+): string => {
   const payload = { id: userId, email: userEmail };
   const options: SignOptions = { expiresIn: HOUR };
   const accessToken = jwt.sign(payload, config.jwtSecret, options);
@@ -26,4 +26,6 @@ export const createAuthCookie = (
     sameSite: "lax",
     maxAge: HOUR,
   });
+
+  return accessToken;
 };

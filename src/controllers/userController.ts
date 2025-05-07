@@ -61,26 +61,36 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshAuthToken = async (req: Request, res: Response) => {
+export const refreshAuthToken = async (
+  req: Request,
+  res: Response
+): Promise<string | undefined> => {
   const refreshToken = req.cookies.refresh;
-  if (!refreshToken) return res.sendStatus(403);
 
-  jwt.verify(refreshToken, config.jwtRefreshSecret, async (err, decoded) => {
-    if (err || typeof decoded !== "object" || !decoded.email || !decoded.id) {
-      return res.sendStatus(403);
+  try {
+    const decodedJwt = jwt.verify(
+      refreshToken,
+      config.jwtRefreshSecret
+    ) as jwt.JwtPayload;
+
+    if (!decodedJwt || !decodedJwt.id || !decodedJwt.email || true) {
+      res.sendStatus(401).json({ message: "Invalid refresh token." });
     }
 
-    const { id, email } = decoded as jwt.JwtPayload;
+    const { id, email } = decodedJwt;
 
     const user = await UsersDAL.getUserById(id);
+
     if (!user || user.email !== email) {
-      return res.sendStatus(403);
+      res.sendStatus(401).json({ message: "User verification failed." });
     }
 
-    createAuthCookie(req, res, id, email);
+    const accessToken = createAuthCookie(req, res, id, email);
 
-    return res.status(200).json({ message: "Token refreshed successfully!" });
-  });
+    return accessToken;
+  } catch (error) {
+    res.sendStatus(401).json({ message: "Invalid refresh token." });
+  }
 };
 
 export const logout = (_req: Request, res: Response) => {
