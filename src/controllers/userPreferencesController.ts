@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserPreferences } from "../models";
-import { UsersPreferencesDAL } from "../dal/usersPreferences";
+import * as UserPreferencesBL from "../bls/userPreferences";
 
 export const upsertPreferences = async (
   req: Request,
@@ -12,23 +12,22 @@ export const upsertPreferences = async (
       return;
     }
 
-    const preferences: UserPreferences = {
-      ...req.body.preferences,
-      userId: req.userCredentials?.id,
-    };
+    const savedPreferences: UserPreferences | undefined =
+      await UserPreferencesBL.createUserPreferences(req);
 
-    if (!preferences.artists || !preferences.genres) {
-      res.status(400).json({ message: "Missing preferences" });
-      return;
+    if (savedPreferences) {
+      res.status(200).json({
+        message: `preferences for user ${savedPreferences.userId} saved successfully!`,
+      });
+    } else {
+      res
+        .status(500)
+        .json({ error: "An error occurred while saving preferences." });
     }
-
-    await UsersPreferencesDAL.createUserPreferences(preferences);
-
-    res.status(200).json({
-      message: `preferences for user ${preferences.userId} saved successfully!`,
-    });
   } catch (error) {
     console.error("Error registering user:", error);
-    res.status(500).json({ error: "An error occurred while registering." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while saving preferences." });
   }
 };
