@@ -1,0 +1,34 @@
+import { RequestHandler } from 'express';
+import { BaseProxy } from './proxyBase';
+import config from '../config/config';
+
+export class SpotifyProxy extends BaseProxy {
+    private getBaseUrl(): string {
+        return `${config.spotifyServiceUrl}/spotifyAPI`;
+    }
+
+    public createLoginProxy(): RequestHandler[] {
+        return this.createProxy({
+            target: `${this.getBaseUrl()}/login`,
+            pathRewriteBase: '^/spotify/login',
+        });
+    }
+
+    public createUsersProxy(): RequestHandler[] {
+        return this.createProxy({
+            target: `${this.getBaseUrl()}/users`,
+            pathRewriteBase: '^/spotify/users',
+            applyAuth: true,
+        });
+    }
+
+    public createPlaylistsProxy(): RequestHandler[] {
+        return this.createProxy({
+            target: `${this.getBaseUrl()}/playlists`,
+            pathRewriteBase: '^/spotify/playlists',
+            applyAuth: true,
+        });
+    }
+}
+
+export const spotifyProxy = new SpotifyProxy();
