@@ -10,10 +10,11 @@ export const loginHandler = async (
     const user = await UsersDAL.getUserById(req.user.id);
 
     if (!user) {
-      res.sendStatus(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    res.sendStatus(200).json({ user });
+    res.status(200).json({ user });
+    return;
   }
 };

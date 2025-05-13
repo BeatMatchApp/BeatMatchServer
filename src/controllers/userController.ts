@@ -83,7 +83,7 @@ export const refreshAuthToken = async (
     ) as JwtPayload;
 
     if (isJwtValueValid(decodedJwt)) {
-      res.sendStatus(401).json({ message: "Invalid refresh token." });
+      res.status(401).json({ message: "Invalid refresh token." });
       return;
     }
 
@@ -92,7 +92,7 @@ export const refreshAuthToken = async (
     const user = await UsersDAL.getUserById(id);
 
     if (isUserVerified(user, email)) {
-      res.sendStatus(401).json({ message: "User verification failed." });
+      res.status(401).json({ message: "User verification failed." });
       return;
     }
 
@@ -100,7 +100,7 @@ export const refreshAuthToken = async (
 
     return accessToken;
   } catch (error) {
-    res.sendStatus(401).json({ message: "Invalid refresh token." });
+    res.status(401).json({ message: "Invalid refresh token." });
   }
 };
 
