@@ -62,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-const isJwtValueValid = (jwtValue: JwtPayload | undefined) => {
+const isJwtValueInvalid = (jwtValue: JwtPayload | undefined) => {
   return !jwtValue || !jwtValue.id || !jwtValue.email;
 };
 
@@ -82,7 +82,7 @@ export const refreshAuthToken = async (
       config.jwtRefreshSecret
     ) as JwtPayload;
 
-    if (isJwtValueValid(decodedJwt)) {
+    if (isJwtValueInvalid(decodedJwt)) {
       res.status(401).json({ message: "Invalid refresh token." });
       return;
     }
