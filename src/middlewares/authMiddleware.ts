@@ -12,12 +12,14 @@ const authMiddleware = async (
   const refreshToken = req.cookies.refresh;
   let accessTokenToVerify = accessToken;
 
-  if (!accessToken && !refreshToken) {
-    return res.status(401).json({ message: "Access token missing or expired" });
-  }
-
   if (!accessToken) {
-    accessTokenToVerify = await refreshAuthToken(req, res);
+    if (refreshToken) {
+      accessTokenToVerify = await refreshAuthToken(req, res);
+    } else {
+      return res
+        .status(401)
+        .json({ message: "Access token missing or expired" });
+    }
   }
 
   jwt.verify(accessTokenToVerify, config.jwtSecret, (err, user) => {
