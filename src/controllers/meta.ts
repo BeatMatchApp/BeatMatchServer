@@ -1,35 +1,15 @@
 import { Response } from "express";
+import { EVENT_CATEGORIES } from "../consts/events";
+import { MOOD_CATEGORIES } from "../consts/moods";
 
 export const getEvents = (_, res: Response) => {
   res.json({
-    events: [
-      "Party",
-      "Drive",
-      "Work out",
-      "Dance",
-      "Cooking",
-      "Study",
-      "Meeting",
-      "Travel",
-      "Sleep",
-      "Picnic",
-    ],
+    events: EVENT_CATEGORIES,
   });
 };
 
 export const getMoods = (_, res: Response) => {
   res.json({
-    moods: [
-      "Happy",
-      "Sad",
-      "Calm",
-      "Romantic",
-      "Nostalgic",
-      "Hype",
-      "Motivated",
-      "Angry",
-      "Energetic",
-      "Focused",
-    ],
+    moods: MOOD_CATEGORIES,
   });
 };
