@@ -3,7 +3,6 @@ import { isValidDateString } from "../common/isValidDateString";
 import { generateUserUUID } from "../common/userUUID";
 import { UsersDAL } from "../dal/users";
 import { UserDetails } from "../controllers/userController";
-import { createCredentialsCookie } from "../services/createCredentialsCookie";
 import { createAuthCookie } from "../services/createAuthCookie";
 
 const register = async (req: Request, res: Response): Promise<void> => {
@@ -29,7 +28,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
     birthDate: new Date(birthDate),
   });
 
-  createCredentialsCookie(req, res, newUserId);
   createAuthCookie(req, res, newUserId, email);
 
   res
@@ -47,7 +45,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  createCredentialsCookie(req, res, user.id);
   createAuthCookie(req, res, user.id, email);
 
   res.status(200).json({ message: "User logged in successfully!", user });

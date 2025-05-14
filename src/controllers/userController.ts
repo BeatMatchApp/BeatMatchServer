@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
 import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config/config";
 import { UsersDAL } from "../dal/users";
 import { createAuthCookie } from "../services/createAuthCookie";
+import { User } from "../models";
 
 export interface UserDetails {
   name: string;
@@ -61,26 +62,46 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshAuthToken = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refresh;
-  if (!refreshToken) return res.sendStatus(403);
+const isJwtValueInvalid = (jwtValue: JwtPayload | undefined) => {
+  return !jwtValue || !jwtValue.id || !jwtValue.email;
+};
 
-  jwt.verify(refreshToken, config.jwtRefreshSecret, async (err, decoded) => {
-    if (err || typeof decoded !== "object" || !decoded.email || !decoded.id) {
-      return res.sendStatus(403);
+const isUserVerified = (user: User | undefined, email: string) => {
+  return !user || user.email !== email;
+};
+
+export const refreshAuthToken = async (
+  req: Request,
+  res: Response
+): Promise<string | undefined> => {
+  const refreshToken = req.cookies.refresh;
+
+  try {
+    const decodedJwt = jwt.verify(
+      refreshToken,
+      config.jwtRefreshSecret
+    ) as JwtPayload;
+
+    if (isJwtValueInvalid(decodedJwt)) {
+      res.status(401).json({ message: "Invalid refresh token." });
+      return;
     }
 
-    const { id, email } = decoded as jwt.JwtPayload;
+    const { id, email } = decodedJwt;
 
     const user = await UsersDAL.getUserById(id);
-    if (!user || user.email !== email) {
-      return res.sendStatus(403);
+
+    if (isUserVerified(user, email)) {
+      res.status(401).json({ message: "User verification failed." });
+      return;
     }
 
-    createAuthCookie(req, res, id, email);
+    const accessToken = createAuthCookie(req, res, id, email);
 
-    return res.status(200).json({ message: "Token refreshed successfully!" });
-  });
+    return accessToken;
+  } catch (error) {
+    res.status(401).json({ message: "Invalid refresh token." });
+  }
 };
 
 export const logout = (_req: Request, res: Response) => {
