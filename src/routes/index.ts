@@ -1,15 +1,15 @@
 import express from "express";
-import { credentialsMiddleware } from "../middlewares/credentialsMiddleware";
 import playlistRoutes from "./playlistRoutes";
 import { loginHandler } from "../loginHandler";
 import userRoutes from "./userRoutes";
+import authMiddleware from "../middlewares/authMiddleware";
 import userPreferencesRoutes from "./userPreferencesRoutes";
 
 const router = express.Router();
 
-router.use("/api/playlist", credentialsMiddleware, playlistRoutes);
+router.use("/login", authMiddleware, loginHandler);
 router.use("/user", userRoutes);
-router.use("/login", credentialsMiddleware, loginHandler);
-router.use("/userPreferences", credentialsMiddleware, userPreferencesRoutes);
+router.use("/playlist", authMiddleware, playlistRoutes);
+router.use("/userPreferences", authMiddleware, userPreferencesRoutes);
 
 export default router;
