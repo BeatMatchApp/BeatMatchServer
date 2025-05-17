@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request } from "express";
 import { UserPreferences } from "../models";
 import { UsersPreferencesDAL } from "../dal/usersPreferences";
 
@@ -7,14 +7,14 @@ const createUserPreferences = async (
 ): Promise<UserPreferences | undefined> => {
   const preferences: Omit<UserPreferences, "userId"> = req.body.preferences;
 
-  if (!preferences.artists || !preferences.genres || !req.userCredentials) {
+  if (!preferences.artists || !preferences.genres || !req.user) {
     return;
   }
 
   const savedPreferences: UserPreferences =
     await UsersPreferencesDAL.createUserPreferences({
       ...preferences,
-      userId: req.userCredentials.id,
+      userId: req.user.id,
     });
 
   return savedPreferences;
