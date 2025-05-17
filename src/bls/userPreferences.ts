@@ -7,7 +7,12 @@ const createUserPreferences = async (
 ): Promise<UserPreferences | undefined> => {
   const preferences: Omit<UserPreferences, "userId"> = req.body.preferences;
 
-  if (!preferences.artists || !preferences.genres || !req.user) {
+  if (
+    !preferences.artists ||
+    !preferences.genres ||
+    !preferences.song ||
+    !req.user
+  ) {
     return;
   }
 
