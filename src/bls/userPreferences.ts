@@ -2,7 +2,7 @@ import { Request } from "express";
 import { UserPreferences } from "../models";
 import { UsersPreferencesDAL } from "../dal/usersPreferences";
 
-const createUserPreferences = async (
+const upsertUserPreferences = async (
   req: Request
 ): Promise<UserPreferences | undefined> => {
   const preferences: Omit<UserPreferences, "userId"> = req.body.preferences;
@@ -17,7 +17,7 @@ const createUserPreferences = async (
   }
 
   const savedPreferences: UserPreferences =
-    await UsersPreferencesDAL.createUserPreferences({
+    await UsersPreferencesDAL.upsertUserPreferences({
       ...preferences,
       userId: req.user.id,
     });
@@ -25,4 +25,4 @@ const createUserPreferences = async (
   return savedPreferences;
 };
 
-export { createUserPreferences };
+export { upsertUserPreferences };

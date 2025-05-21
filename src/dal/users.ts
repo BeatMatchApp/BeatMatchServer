@@ -28,16 +28,13 @@ const UsersDAL = {
     }
   },
 
-  async createUser(user: User) {
+  async upsertUser(user: User) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
-    return await dataAccess(USERS_TABLE).insert(user).returning("*");
-  },
-
-  async updateUser(id: string, user: User) {
     return await dataAccess(USERS_TABLE)
-      .where({ id })
-      .update(user)
+      .insert(user)
+      .onConflict("id")
+      .merge()
       .returning("*");
   },
 

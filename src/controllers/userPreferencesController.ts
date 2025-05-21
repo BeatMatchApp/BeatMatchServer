@@ -13,7 +13,7 @@ export const upsertPreferences = async (
     }
 
     const savedPreferences: UserPreferences | undefined =
-      await UserPreferencesBL.createUserPreferences(req);
+      await UserPreferencesBL.upsertUserPreferences(req);
 
     if (savedPreferences) {
       res.status(200).json({
