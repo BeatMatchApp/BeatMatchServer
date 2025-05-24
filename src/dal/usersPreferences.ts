@@ -10,10 +10,14 @@ const UsersPreferencesDAL = {
       .first();
   },
 
-  async createUserPreferences(preferences: UserPreferences) {
-    return await dataAccess(USERS_PREFERENCES_TABLE)
+  async createUserPreferences(
+    preferences: UserPreferences
+  ): Promise<UserPreferences> {
+    const [newPreferences] = await dataAccess(USERS_PREFERENCES_TABLE)
       .insert(preferences)
       .returning("*");
+
+    return newPreferences;
   },
 
   async deleteUserPreferences(userId: string) {
