@@ -109,3 +109,30 @@ export const logout = (_req: Request, res: Response) => {
   res.clearCookie(ACCESS_COOKIE);
   return res.status(200).json({ message: "Logged out successfully" });
 };
+
+export const getUserDetails = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.user || !req.user.id) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const userId = req.user.id;
+    const user = await UsersDAL.getUserById(userId);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching user details." });
+  }
+};

@@ -4,5 +4,6 @@ import * as userPreferencesController from "../controllers/userPreferencesContro
 const router = express.Router();
 
 router.post("/updatePreferences", userPreferencesController.upsertPreferences);
+router.get("/getPreferences", userPreferencesController.getPreferences);
 
 export default router;
