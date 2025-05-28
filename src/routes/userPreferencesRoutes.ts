@@ -3,7 +3,7 @@ import * as userPreferencesController from "../controllers/userPreferencesContro
 
 const router = express.Router();
 
-router.post("/updatePreferences", userPreferencesController.upsertPreferences);
 router.get("/getPreferences", userPreferencesController.getPreferences);
+router.post("/updatePreferences", userPreferencesController.upsertPreferences);
 
 export default router;

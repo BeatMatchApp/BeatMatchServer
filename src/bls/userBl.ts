@@ -4,6 +4,7 @@ import { generateUserUUID } from "../common/userUUID";
 import { UsersDAL } from "../dal/users";
 import { UserDetails } from "../controllers/userController";
 import { createAuthCookie } from "../services/createAuthCookie";
+import { UpdateUserInput } from "../models/interfaces/User";
 
 const register = async (req: Request, res: Response): Promise<void> => {
   const { email, birthDate }: UserDetails = req.body.userDetails;
@@ -50,4 +51,25 @@ const login = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: "User logged in successfully!", user });
 };
 
-export { login, register };
+const update = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user!.id;
+  const updatedDetails: UpdateUserInput = req.body.userDetails;
+
+  if (!updatedDetails) {
+    res.status(400).json({ message: "Missing user details." });
+    return;
+  }
+
+  const updatedUser = await UsersDAL.updateUser(userId, updatedDetails);
+
+  if (!updatedUser) {
+    res.status(500).json({ message: "Failed to update user." });
+    return;
+  }
+
+  res
+    .status(200)
+    .json({ message: "User updated successfully!", user: updatedUser });
+};
+
+export { login, register, update };
