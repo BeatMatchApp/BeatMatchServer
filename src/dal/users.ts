@@ -29,7 +29,7 @@ const UsersDAL = {
     }
   },
 
-  async upsertUser(user: User) {
+  async createUser(user: User) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
 
@@ -42,8 +42,8 @@ const UsersDAL = {
 
   async updateUser(id: User["id"], user: UpdateUserInput) {
     return await dataAccess(USERS_TABLE)
+      .where({ id })
       .update(user)
-      .where("id", id)
       .returning("*");
   },
 

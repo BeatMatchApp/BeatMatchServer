@@ -23,7 +23,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const newUser = await UsersDAL.upsertUser({
+  const newUser = await UsersDAL.createUser({
     ...req.body.userDetails,
     id: newUserId,
     birthDate: new Date(birthDate),
