@@ -9,8 +9,6 @@ dotenv.config();
 
 const createServer = async (): Promise<Express> => {
   try {
-    console.log("app");
-    console.log(process.env.PORT);
     const app = express();
 
     app.use(express.json());
