@@ -5,7 +5,7 @@ import https from "https";
 import config from "./config/config";
 
 createServer().then((app) => {
-  let port: string;
+  let port: number;
 
   app.use("*", (_, res) => {
     res.sendFile("client/index.html", { root: "public" });
