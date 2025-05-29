@@ -9,6 +9,7 @@
     "start": "tsc && node ./dist/src/server.js",
     "prod": "rm -r -f ./public/client && tsc -p tsconfig_prod.json && cp -a ../BeatMatchClient/dist ./public/client && pm2 restart ecosystem.config.js --env production",
     "migrate": "knex migrate:latest --knexfile src/config/db.ts --env development",
+    "migrateProd": "knex migrate:latest --env production",
     "rollback": "knex migrate:rollback --knexfile src/config/db.ts --env development"
   },
   "repository": {
