@@ -1,10 +1,10 @@
 module.exports = {
   apps: [
     {
-      name: 'server_app',
-      script: './dist/src/app.js',
+      name: "server_app",
+      script: "./dist/app.js",
       env_production: {
-        NODE_ENV: 'production',
+        NODE_ENV: "production",
       },
     },
   ],
