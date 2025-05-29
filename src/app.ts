@@ -1,18 +1,28 @@
-import express from "express";
+import express, { Express } from "express";
 import config from "./config/config";
 import routes from "./routes";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
 
-const cors = require("cors");
-const app = express();
+dotenv.config();
 
-app.use(express.json());
-app.use(cookieParser());
+const createServer = async (): Promise<Express> => {
+  try {
+    const app = express();
 
-app.use(cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true }));
+    app.use(express.json());
+    app.use(cookieParser());
+    app.use(
+      cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
+    );
 
-app.use("/", routes);
+    app.use("/", routes);
 
-app.listen(config.port, () => {
-  console.log(`Server is running on port ${config.port}`);
-});
+    return app;
+  } catch (error) {
+    throw new Error(`Error initializing app: ${error.message}`);
+  }
+};
+
+export default createServer;
