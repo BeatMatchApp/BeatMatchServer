@@ -16,6 +16,7 @@ const createServer = async (): Promise<Express> => {
     app.use(
       cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
     );
+    app.use("/public", express.static("public"));
 
     app.use("/", routes);
 
