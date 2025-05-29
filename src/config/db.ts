@@ -1,9 +1,3 @@
-import dotenv from "dotenv";
-
-dotenv.config();
-
-console.log("host:", process.env.PG_HOST);
-console.log("password:", process.env.PG_PASSWORD);
 module.exports = {
   development: {
     client: "pg",
