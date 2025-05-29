@@ -31,7 +31,7 @@ createServer().then((app) => {
   }
 
   server = server
-    .listen(port, () => {
+    .listen(port, "0.0.0.0", () => {
       if (config.nodeEnv !== "production")
         console.log(`Server running on http://localhost:${port}`);
       else console.log(`Server running on https://localhost:${port}`);
