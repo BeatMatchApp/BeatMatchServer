@@ -33,11 +33,7 @@ const UsersDAL = {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
 
-    return await dataAccess(USERS_TABLE)
-      .insert(user)
-      .onConflict("id")
-      .merge()
-      .returning("*");
+    return await dataAccess(USERS_TABLE).insert(user).returning("*");
   },
 
   async updateUser(id: User["id"], user: UpdateUserInput) {
