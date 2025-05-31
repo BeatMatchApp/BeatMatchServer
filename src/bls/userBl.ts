@@ -5,7 +5,6 @@ import { UsersDAL } from "../dal/users";
 import { UserDetails } from "../controllers/userController";
 import { createAuthCookie } from "../services/createAuthCookie";
 import { UpdateUserInput, User } from "../models/interfaces/User";
-import { up } from "../migrations/20250419195202_create_initial_tables";
 
 const register = async (req: Request, res: Response): Promise<void> => {
   const { email, birthDate }: UserDetails = req.body.userDetails;
