@@ -142,12 +142,21 @@ export const updateUserDetails = async (
   res: Response
 ): Promise<void> => {
   try {
-    if (!req.user || !req.user.id) {
+    const userId = req.user?.id;
+
+    if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    await UserBl.update(req, res);
+    const user = await UserBl.update(req, res, userId);
+
+    if (!user) {
+      res.status(500).json({ message: "Failed to update user." });
+      return;
+    }
+
+    res.status(200).json(user);
   } catch (error) {
     console.error("Error updating user details:", error);
     res
