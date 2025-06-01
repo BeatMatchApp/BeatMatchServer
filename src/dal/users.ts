@@ -1,4 +1,5 @@
 import { User } from "../models";
+import { UpdateUserInput } from "../models/interfaces/User";
 import { dataAccess } from "./dataAccess";
 import bcrypt from "bcrypt";
 
@@ -31,10 +32,11 @@ const UsersDAL = {
   async createUser(user: User) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
+
     return await dataAccess(USERS_TABLE).insert(user).returning("*");
   },
 
-  async updateUser(id: string, user: User) {
+  async updateUser(id: User["id"], user: UpdateUserInput) {
     return await dataAccess(USERS_TABLE)
       .where({ id })
       .update(user)

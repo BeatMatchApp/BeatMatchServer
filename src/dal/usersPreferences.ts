@@ -10,11 +10,13 @@ const UsersPreferencesDAL = {
       .first();
   },
 
-  async createUserPreferences(
+  async upsertUserPreferences(
     preferences: UserPreferences
   ): Promise<UserPreferences> {
     const [newPreferences] = await dataAccess(USERS_PREFERENCES_TABLE)
       .insert(preferences)
+      .onConflict("userId")
+      .merge()
       .returning("*");
 
     return newPreferences;
