@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import config from "../config/config";
+import { refreshAuthToken } from "../services/refreshToken";
 
 const authMiddleware = async (
   req: Request,
@@ -9,11 +8,11 @@ const authMiddleware = async (
 ) => {
   const accessToken = req.cookies.spotify_access_token;
   const refreshToken = req.cookies.spotify_refresh_token;
-  let accessTokenToVerify = accessToken;
+  const userId = req.cookies.user_id;
 
   if (!accessToken) {
     if (refreshToken) {
-      accessTokenToVerify = await refreshToken(req, res);
+      await refreshAuthToken(req, res);
     } else {
       return res
         .status(401)
@@ -21,11 +20,8 @@ const authMiddleware = async (
     }
   }
 
-  jwt.verify(accessTokenToVerify, config.jwtSecret, (err, user) => {
-    if (err) return res.sendStatus(401);
-    req.user = user;
-    next();
-  });
+  req.user = { id: userId };
+  next();
 };
 
 export default authMiddleware;

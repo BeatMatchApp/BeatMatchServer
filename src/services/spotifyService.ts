@@ -11,7 +11,7 @@ export const spotifyService = axios.create({
 
 export const refreshSpotifyAccessToken = async (refreshToken: string) => {
   try {
-    const response = await spotifyService.post("/spotifyAPI/refresh", {
+    const response = await spotifyService.post("/spotifyAPI/resfreshToken", {
       refreshToken,
     });
 

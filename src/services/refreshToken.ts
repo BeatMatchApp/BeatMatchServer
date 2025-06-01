@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { refreshSpotifyAccessToken } from "./spotifyService";
 import { createAuthCookie } from "./createAuthCookie";
 
-const refreshToken = async (req: Request, res: Response) => {
+export const refreshAuthToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.spotify_refresh_token;
 
   try {

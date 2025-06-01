@@ -3,7 +3,10 @@ import { isValidDateString } from "../common/isValidDateString";
 import { generateUserUUID } from "../common/userUUID";
 import { UsersDAL } from "../dal/users";
 import { UserDetails } from "../controllers/userController";
-import { createAuthCookie } from "../services/createAuthCookie";
+import {
+  createAuthCookie,
+  createUserCookie,
+} from "../services/createAuthCookie";
 import { UpdateUserInput, User } from "../models/interfaces/User";
 
 const register = async (req: Request, res: Response): Promise<void> => {
@@ -29,10 +32,11 @@ const register = async (req: Request, res: Response): Promise<void> => {
     birthDate: new Date(birthDate),
   });
 
-  const accessToken = req.cookies.spotify_access_token;
-  const refreshToken = req.cookies.spotify_refresh_token;
+  // const accessToken = req.cookies.spotify_access_token;
+  // const refreshToken = req.cookies.spotify_refresh_token;
 
-  createAuthCookie(res, accessToken, refreshToken);
+  // createAuthCookie(res, accessToken, refreshToken);
+  createUserCookie(user.id, res);
 
   res
     .status(201)
@@ -49,10 +53,11 @@ const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const accessToken = req.cookies.spotify_access_token;
-  const refreshToken = req.cookies.spotify_refresh_token;
+  // const accessToken = req.cookies.spotify_access_token;
+  // const refreshToken = req.cookies.spotify_refresh_token;
 
-  createAuthCookie(res, accessToken, refreshToken);
+  // createAuthCookie(res, accessToken, refreshToken);
+  createUserCookie(user.id, res);
 
   res.status(200).json({ message: "User logged in successfully!", user });
 };
