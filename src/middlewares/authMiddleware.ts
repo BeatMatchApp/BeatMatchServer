@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
-import { refreshAuthToken } from "../controllers/userController";
 
 const authMiddleware = async (
   req: Request,
@@ -14,9 +13,8 @@ const authMiddleware = async (
 
   if (!accessToken) {
     if (refreshToken) {
-      accessTokenToVerify = await refreshAuthToken(req, res);
+      accessTokenToVerify = await refreshToken(req, res);
     } else {
-      debugger;
       return res
         .status(401)
         .json({ message: "Access token missing or expired" });
