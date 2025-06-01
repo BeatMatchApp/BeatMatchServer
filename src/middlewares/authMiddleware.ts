@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { refreshAuthToken } from "../services/refreshToken";
+import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
 
 const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const accessToken = req.cookies.spotify_access_token;
-  const refreshToken = req.cookies.spotify_refresh_token;
+  const accessToken = req.cookies[ACCESS_COOKIE];
+  const refreshToken = req.cookies[REFRESH_COOKIE];
   const userId = req.cookies.user_id;
 
   if (!accessToken) {
