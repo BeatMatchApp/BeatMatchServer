@@ -32,7 +32,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     birthDate: new Date(birthDate),
   });
 
-  createUserCookie(user.id, res);
+  createUserCookie(newUserId, res);
 
   res
     .status(201)
