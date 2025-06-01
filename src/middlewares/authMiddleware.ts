@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { refreshAuthToken } from "../services/refreshToken";
-import { ACCESS_COOKIE, REFRESH_COOKIE } from "../consts/general";
+import { ACCESS_COOKIE, REFRESH_COOKIE, USER_COOKIE } from "../consts/general";
 
 const authMiddleware = async (
   req: Request,
@@ -9,7 +9,7 @@ const authMiddleware = async (
 ) => {
   const accessToken = req.cookies[ACCESS_COOKIE];
   const refreshToken = req.cookies[REFRESH_COOKIE];
-  const userId = req.cookies.user_id;
+  const userId = req.cookies[USER_COOKIE];
 
   if (!accessToken) {
     if (refreshToken) {

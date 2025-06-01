@@ -1,9 +1,9 @@
 import { Response } from "express";
-import { HOUR, MONTH } from "../consts/general";
+import { ACCESS_COOKIE, HOUR, MONTH, USER_COOKIE } from "../consts/general";
 import { User } from "../models";
 
 export const createAuthCookie = (res: Response, accessToken: string) => {
-  res.cookie("spotify_access_token", accessToken, {
+  res.cookie(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
@@ -12,7 +12,7 @@ export const createAuthCookie = (res: Response, accessToken: string) => {
 };
 
 export const createUserCookie = (userId: User["id"], res: Response) => {
-  res.cookie("user_id", userId, {
+  res.cookie(USER_COOKIE, userId, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
