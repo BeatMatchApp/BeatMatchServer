@@ -1,31 +1,24 @@
-import { Request, Response } from "express";
-import { ACCESS_COOKIE, HOUR, REFRESH_COOKIE } from "../consts/general";
-import jwt, { SignOptions } from "jsonwebtoken";
-import config from "../config/config";
+import { Response } from "express";
+import { HOUR, MONTH } from "../consts/general";
 
 export const createAuthCookie = (
-  req: Request,
   res: Response,
-  userId: string,
-  userEmail: string
-): string => {
-  const payload = { id: userId, email: userEmail };
-  const options: SignOptions = { expiresIn: HOUR };
-  const accessToken = jwt.sign(payload, config.jwtSecret, options);
-  const refreshToken = jwt.sign(payload, config.jwtRefreshSecret, options);
-
-  res.cookie(ACCESS_COOKIE, accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    maxAge: HOUR,
-  });
-  res.cookie(REFRESH_COOKIE, refreshToken, {
+  accessToken: string,
+  refreshToken?: string
+) => {
+  res.cookie("spotify_access_token", accessToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     maxAge: HOUR,
   });
 
-  return accessToken;
+  if (refreshToken) {
+    res.cookie("spotify_refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: MONTH,
+    });
+  }
 };

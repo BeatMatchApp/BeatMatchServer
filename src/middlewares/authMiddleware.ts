@@ -8,8 +8,8 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const accessToken = req.cookies.access;
-  const refreshToken = req.cookies.refresh;
+  const accessToken = req.cookies.spotify_access_token;
+  const refreshToken = req.cookies.spotify_refresh_token;
   let accessTokenToVerify = accessToken;
 
   if (!accessToken) {
