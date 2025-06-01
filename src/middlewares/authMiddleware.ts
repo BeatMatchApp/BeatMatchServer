@@ -16,6 +16,7 @@ const authMiddleware = async (
     if (refreshToken) {
       accessTokenToVerify = await refreshAuthToken(req, res);
     } else {
+      debugger;
       return res
         .status(401)
         .json({ message: "Access token missing or expired" });
