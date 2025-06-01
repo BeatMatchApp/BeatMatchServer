@@ -32,10 +32,6 @@ const register = async (req: Request, res: Response): Promise<void> => {
     birthDate: new Date(birthDate),
   });
 
-  // const accessToken = req.cookies.spotify_access_token;
-  // const refreshToken = req.cookies.spotify_refresh_token;
-
-  // createAuthCookie(res, accessToken, refreshToken);
   createUserCookie(user.id, res);
 
   res
@@ -53,10 +49,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // const accessToken = req.cookies.spotify_access_token;
-  // const refreshToken = req.cookies.spotify_refresh_token;
-
-  // createAuthCookie(res, accessToken, refreshToken);
   createUserCookie(user.id, res);
 
   res.status(200).json({ message: "User logged in successfully!", user });
