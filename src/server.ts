@@ -3,6 +3,9 @@ import http, { Server } from "http";
 import fs from "fs";
 import https from "https";
 import config from "./config/config";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 createServer().then((app) => {
   let port: number;
