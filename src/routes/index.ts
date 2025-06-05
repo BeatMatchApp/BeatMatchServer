@@ -10,7 +10,7 @@ import userPreferencesRoutes from './userPreferencesRoutes';
 
 const router = express.Router();
 
-router.use('/login', loginHandler);
+router.use('/login', authMiddleware, loginHandler);
 router.use('/user', authMiddleware, userRoutes);
 router.use('/auth', authRoutes);
 router.use('/playlist', authMiddleware, playlistRoutes);
