@@ -2,6 +2,10 @@ import OpenAI from "openai";
 import config from "../config/config";
 import { ApiError } from "../common/errors";
 
+if (!config.openAiApiKey) {
+  throw new Error("Missing OPENAI_API_KEY in environment");
+}
+
 console.log("OPENAI_API_KEY from env:", config.openAiApiKey);
 
 const openai = new OpenAI({
