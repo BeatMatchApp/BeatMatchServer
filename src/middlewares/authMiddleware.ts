@@ -1,20 +1,19 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import config from "../config/config";
-import { refreshAuthToken } from "../controllers/userController";
+import { refreshAuthToken } from "../services/refreshToken";
+import { ACCESS_COOKIE, REFRESH_COOKIE, USER_COOKIE } from "../consts/general";
 
 const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const accessToken = req.cookies.access;
-  const refreshToken = req.cookies.refresh;
-  let accessTokenToVerify = accessToken;
+  const accessToken = req.cookies[ACCESS_COOKIE];
+  const refreshToken = req.cookies[REFRESH_COOKIE];
+  const userId = req.cookies[USER_COOKIE];
 
   if (!accessToken) {
     if (refreshToken) {
-      accessTokenToVerify = await refreshAuthToken(req, res);
+      await refreshAuthToken(req, res);
     } else {
       return res
         .status(401)
@@ -22,11 +21,8 @@ const authMiddleware = async (
     }
   }
 
-  jwt.verify(accessTokenToVerify, config.jwtSecret, (err, user) => {
-    if (err) return res.sendStatus(401);
-    req.user = user;
-    next();
-  });
+  req.user = { id: userId };
+  next();
 };
 
 export default authMiddleware;

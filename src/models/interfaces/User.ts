@@ -6,3 +6,9 @@ export interface User {
   password: string;
   country?: string;
 }
+
+export interface UpdateUserInput {
+  name: string;
+  email: string;
+  birthDate: Date;
+}

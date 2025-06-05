@@ -9,5 +9,5 @@ export default {
   openAiApiKey: process.env.OPENAI_API_KEY,
   jwtSecret: process.env.JWT_SECRET!,
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET!,
-  spotifyServiceUrl: process.env.SPOTIFY_SERVICE_URL!
+  spotifyServiceUrl: process.env.SPOTIFY_SERVICE_URL!,
 };
