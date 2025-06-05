@@ -4,11 +4,14 @@ import createServer from "./app";
 import http, { Server } from "http";
 import fs from "fs";
 import https from "https";
+import express from "express";
 
 dotenv.config();
 
 createServer().then((app) => {
   let port: number;
+
+  app.use(express.static("public/client"));
 
   app.use("*", (_, res) => {
     res.sendFile("client/index.html", { root: "public" });
