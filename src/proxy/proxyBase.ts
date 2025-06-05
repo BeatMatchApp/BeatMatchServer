@@ -23,15 +23,10 @@ export class BaseProxy {
   protected createProxyMiddleware(config: ProxyConfig): RequestHandler {
     const { target, pathRewriteBase = '', secure = true } = config;
 
-    // const agent = new https.Agent({
-    //   rejectUnauthorized: secure,
-    // });
-
     return createProxyMiddleware({
       target,
       changeOrigin: true,
       secure,
-      //   agent,
       pathRewrite: (path, req) => path.replace(new RegExp(pathRewriteBase), ''),
       plugins: [loggerPlugin],
     });
