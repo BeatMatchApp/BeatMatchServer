@@ -35,7 +35,7 @@ export class SpotifyProxy extends BaseProxy {
     return this.createProxy({
       target: `${this.getBaseUrl()}/general`,
       pathRewriteBase: '^/spotify/general',
-      applyAuth: true,
+      // applyAuth: true,
     });
   }
 }
