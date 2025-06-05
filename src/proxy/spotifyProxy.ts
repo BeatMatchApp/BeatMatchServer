@@ -12,6 +12,7 @@ export class SpotifyProxy extends BaseProxy {
     return this.createProxy({
       target: `${this.getBaseUrl()}/login`,
       pathRewriteBase: '^/spotify/login',
+      secure: false,
     });
   }
 
