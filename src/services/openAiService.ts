@@ -2,15 +2,19 @@ import OpenAI from "openai";
 import config from "../config/config";
 import { ApiError } from "../common/errors";
 
-if (!config.openAiApiKey) {
-  throw new Error("Missing OPENAI_API_KEY in environment");
+let openaiInstance: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!openaiInstance) {
+    const key = config.openAiApiKey;
+    if (!key) {
+      throw new Error("OPENAI_API_KEY is missing");
+    }
+    console.log("Creating OpenAI client with key:", key);
+    openaiInstance = new OpenAI({ apiKey: key });
+  }
+  return openaiInstance;
 }
-
-console.log("OPENAI_API_KEY from env:", config.openAiApiKey);
-
-const openai = new OpenAI({
-  apiKey: config.openAiApiKey,
-});
 
 export const getAIResponse = async (
   prompt: string,
@@ -21,6 +25,7 @@ export const getAIResponse = async (
   } = {}
 ): Promise<string> => {
   try {
+    const openai = getOpenAI(); // 👈 safe, delayed creation
     const completion = await openai.chat.completions.create({
       model: options.model || "gpt-3.5-turbo",
       messages: [
