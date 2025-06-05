@@ -4,7 +4,7 @@ import config from '../config/config';
 
 export class SpotifyProxy extends BaseProxy {
   private getBaseUrl(): string {
-    return `https://localhost:5000/spotifyAPI`;
+    return `http://localhost:4001/spotifyAPI`;
   }
 
   public createLoginProxy(): RequestHandler[] {
