@@ -2,9 +2,10 @@ import OpenAI from "openai";
 import config from "../config/config";
 import { ApiError } from "../common/errors";
 
+console.log("OPENAI_API_KEY from env:", config.openAiApiKey);
+
 const openai = new OpenAI({
-  apiKey:
-    "sk-proj-g7W15bZluZZi7JHnB5sKT0fVOUMt4wcIHSizjP_IyuzadmXPF-8R907k-A6tD285a4XH_a0K8dT3BlbkFJARzLCYsQlOICuz",
+  apiKey: config.openAiApiKey,
 });
 
 export const getAIResponse = async (

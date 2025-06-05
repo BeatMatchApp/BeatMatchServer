@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import * as openAiService from "../services/openAiService";
 import { ApiError } from "../common/errors";
-import dotenv from "dotenv";
 
-dotenv.config();
 // TODO: if you have an idea to not write interface GeminiParams both on client and server tell me
 export interface SuggestPlaylistRequestParams {
   favoriteArtist?: string;
