@@ -27,3 +27,14 @@ Content-Type: application/json
 ### login handler
 POST http://localhost:3000/login
 Content-Type: application/json
+
+
+### create playlist
+POST http://localhost:3000/musicalAIConsultant/createPlaylist
+Content-Type: application/json
+Cookie: spotify_access_token=BQC0sNpCv232T8qYASU5DoAOtwlyjrZd_Dq_BDrE_3xxhFxBTQuKfPqsUSAswgS4LOIsJ9SkQ8qWOuVzXPMbx-C6rsF9OQf1z8gYnEpTlk3e5wJtnc7FzhF873x9GzFbP5bsgPkF8D9IELI0LX3CFcz-O2TTD64SSblTxznbacZk5VBZvVsyrTxbpCGR4jiIGOvXKVgOmlxWHXCMfVQRiq4QnSUmwDrqwkzQ4emGh-l7Of0urZr3_ZbaYPljWFBiC66jJsfkLhekJX_ywbpgZrq-3fynbxlVdSjUIpHJst4; spotify_refresh_token=AQCw73Qlh6ycFqYgGgKTbFWm4OhRQAUtIVgtKydTbgE5II3vx6qxtprpuLHDBusRNz-4dWCl2D_rTQA-Cn8-TE7fzUsOPNsBAs9EvmqAl71TrMljY75qQ0_uEOfS_VO6hU4
+
+{
+    "vibe": "calm",
+    "activity": "road trip"
+}
