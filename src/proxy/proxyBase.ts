@@ -26,7 +26,7 @@ export class BaseProxy {
     return createProxyMiddleware({
       target,
       changeOrigin: true,
-      secure,
+      secure: false,
       pathRewrite: (path, req) => path.replace(new RegExp(pathRewriteBase), ''),
       plugins: [loggerPlugin],
     });
