@@ -3,7 +3,11 @@ import { isValidDateString } from "../common/isValidDateString";
 import { generateUserUUID } from "../common/userUUID";
 import { UsersDAL } from "../dal/users";
 import { UserDetails } from "../controllers/userController";
-import { createAuthCookie } from "../services/createAuthCookie";
+import {
+  createAuthCookie,
+  createUserCookie,
+} from "../services/createAuthCookie";
+import { UpdateUserInput, User } from "../models/interfaces/User";
 
 const register = async (req: Request, res: Response): Promise<void> => {
   const { email, birthDate }: UserDetails = req.body.userDetails;
@@ -28,7 +32,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     birthDate: new Date(birthDate),
   });
 
-  createAuthCookie(req, res, newUserId, email);
+  createUserCookie(newUserId, res);
 
   res
     .status(201)
@@ -45,9 +49,27 @@ const login = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  createAuthCookie(req, res, user.id, email);
+  createUserCookie(user.id, res);
 
   res.status(200).json({ message: "User logged in successfully!", user });
 };
 
-export { login, register };
+const update = async (
+  req: Request,
+  res: Response,
+  userId: User["id"]
+): Promise<User | undefined> => {
+  const updatedDetails: UpdateUserInput = req.body.userDetails;
+
+  if (!updatedDetails) {
+    res.status(400).json({ message: "Missing user details." });
+    return;
+  }
+
+  const updatedUserResponse = await UsersDAL.updateUser(userId, updatedDetails);
+  const updatedUser = updatedUserResponse?.[0];
+
+  return updatedUser;
+};
+
+export { login, register, update };

@@ -1,6 +1,6 @@
-import { Request } from "express";
-import { UserPreferences } from "../models";
-import { UsersPreferencesDAL } from "../dal/usersPreferences";
+import { Request } from 'express';
+import { UserPreferences } from '../models';
+import { UsersPreferencesDAL } from '../dal/usersPreferences';
 
 const getUserPreferences = async (
   userId: string
@@ -11,10 +11,10 @@ const getUserPreferences = async (
   return preferences;
 };
 
-const createUserPreferences = async (
+const upsertUserPreferences = async (
   req: Request
 ): Promise<UserPreferences | undefined> => {
-  const preferences: Omit<UserPreferences, "userId"> = req.body.preferences;
+  const preferences: Omit<UserPreferences, 'userId'> = req.body.preferences;
 
   if (
     !preferences.artists ||
@@ -26,7 +26,7 @@ const createUserPreferences = async (
   }
 
   const savedPreferences: UserPreferences =
-    await UsersPreferencesDAL.createUserPreferences({
+    await UsersPreferencesDAL.upsertUserPreferences({
       ...preferences,
       userId: req.user.id,
     });
@@ -34,4 +34,4 @@ const createUserPreferences = async (
   return savedPreferences;
 };
 
-export { createUserPreferences, getUserPreferences };
+export { upsertUserPreferences, getUserPreferences };

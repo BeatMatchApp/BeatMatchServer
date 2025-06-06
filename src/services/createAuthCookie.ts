@@ -1,31 +1,21 @@
-import { Request, Response } from "express";
-import { ACCESS_COOKIE, HOUR, REFRESH_COOKIE } from "../consts/general";
-import jwt, { SignOptions } from "jsonwebtoken";
-import config from "../config/config";
+import { Response } from "express";
+import { ACCESS_COOKIE, HOUR, MONTH, USER_COOKIE } from "../consts/general";
+import { User } from "../models";
 
-export const createAuthCookie = (
-  req: Request,
-  res: Response,
-  userId: string,
-  userEmail: string
-): string => {
-  const payload = { id: userId, email: userEmail };
-  const options: SignOptions = { expiresIn: HOUR };
-  const accessToken = jwt.sign(payload, config.jwtSecret, options);
-  const refreshToken = jwt.sign(payload, config.jwtRefreshSecret, options);
-
+export const createAuthCookie = (res: Response, accessToken: string) => {
   res.cookie(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     maxAge: HOUR,
   });
-  res.cookie(REFRESH_COOKIE, refreshToken, {
+};
+
+export const createUserCookie = (userId: User["id"], res: Response) => {
+  res.cookie(USER_COOKIE, userId, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
-    maxAge: HOUR,
+    maxAge: MONTH,
   });
-
-  return accessToken;
 };
