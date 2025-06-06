@@ -2,11 +2,14 @@
   "name": "beatmatchserver",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "start": "node src/app.ts",
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "tsc && node ./dist/src/server.js",
+    "prod": "rm -r -f ./public/client && tsc -p tsconfig_prod.json && cp -a ../BeatMatchClient/dist ./public/client && pm2 restart ecosystem.config.js --env production",
     "migrate": "knex migrate:latest --knexfile src/config/db.ts --env development",
+    "migrate:prod": "npx ts-node -r dotenv/config ./node_modules/.bin/knex migrate:latest --knexfile src/config/db.ts --env production",
     "rollback": "knex migrate:rollback --knexfile src/config/db.ts --env development"
   },
   "repository": {
@@ -31,6 +34,7 @@
     "express": "^4.21.2",
     "google-auth-library": "^9.15.1",
     "http-proxy-middleware": "^3.0.5",
+    "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
     "openai": "^4.97.0",

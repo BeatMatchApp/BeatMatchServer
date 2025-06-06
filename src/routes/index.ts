@@ -8,6 +8,7 @@ import authMiddleware from '../middlewares/authMiddleware';
 import MusicalAIRoutes from './aiRoutes';
 import spotifyRoutes from './spotifyRoutes';
 import userPreferencesRoutes from './userPreferencesRoutes';
+import { callbackHandler } from '../controllers/callback';
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use('/userPreferences', authMiddleware, userPreferencesRoutes);
 router.use('/meta', authMiddleware, metaRoute);
 router.use('/musicalAIConsultant', MusicalAIRoutes);
 router.use('/spotify', spotifyRoutes);
+router.use('/callback', callbackHandler);
 
 export default router;

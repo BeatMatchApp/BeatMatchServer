@@ -2,9 +2,18 @@ import OpenAI from 'openai';
 import config from '../config/config';
 import { ApiError } from '../common/errors';
 
-const openai = new OpenAI({
-  apiKey: config.openAiApiKey,
-});
+let openaiInstance: OpenAI | null = null;
+
+const getOpenAI = (): OpenAI => {
+  if (!openaiInstance) {
+    const key = config.openAiApiKey;
+    if (!key) {
+      throw new Error('OPENAI_API_KEY is missing');
+    }
+    openaiInstance = new OpenAI({ apiKey: key });
+  }
+  return openaiInstance;
+};
 
 export const getAIResponse = async (
   prompt: string,
@@ -15,8 +24,9 @@ export const getAIResponse = async (
   } = {}
 ): Promise<string> => {
   try {
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: options.model || 'gpt-4o',
       messages: [
         { role: 'system', content: systemAssistantMessage },
         { role: 'user', content: prompt },
