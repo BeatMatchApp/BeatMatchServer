@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
+import https from 'https';
 
 let spotifyService: AxiosInstance | null = null;
 
@@ -14,12 +15,15 @@ function getSpotifyService(): AxiosInstance {
       throw new Error('spotifyServiceUrl is not defined in config.');
     }
 
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
     spotifyService = axios.create({
       baseURL: config.spotifyServiceUrl,
       headers: {
         'Content-type': 'application/json',
       },
       withCredentials: true,
+      httpsAgent,
     });
   }
 
