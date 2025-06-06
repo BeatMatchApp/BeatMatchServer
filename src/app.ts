@@ -1,9 +1,9 @@
-import express, { Express } from "express";
-import config from "./config/config";
-import routes from "./routes";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import dotenv from "dotenv";
+import express, { Express } from 'express';
+import config from './config/config';
+import routes from './routes';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -16,9 +16,8 @@ const createServer = async (): Promise<Express> => {
     app.use(
       cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
     );
-    app.use("/public", express.static("public"));
-
-    app.use("/", routes);
+    app.use('/', routes);
+    app.use('/public', express.static('public'));
 
     return app;
   } catch (error) {

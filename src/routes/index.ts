@@ -7,6 +7,7 @@ import metaRoute from './meta';
 import authMiddleware from '../middlewares/authMiddleware';
 import spotifyRoutes from './spotifyRoutes';
 import userPreferencesRoutes from './userPreferencesRoutes';
+import { callbackHandler } from '../controllers/callback';
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use('/playlist', authMiddleware, playlistRoutes);
 router.use('/userPreferences', authMiddleware, userPreferencesRoutes);
 router.use('/meta', authMiddleware, metaRoute);
 router.use('/spotify', spotifyRoutes);
+router.use('/callback', callbackHandler);
 
 export default router;

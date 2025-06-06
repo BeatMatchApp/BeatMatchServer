@@ -42,3 +42,28 @@ export const refreshSpotifyAccessToken = async (
     throw error;
   }
 };
+
+export const getSpotifyTokensByCode = async (
+  code: string
+): Promise<{ accessToken: string; refreshToken: string }> => {
+  try {
+    const response = await getSpotifyService().post('/spotifyAPI/getTokens', {
+      code,
+    });
+
+    if (response.status === 200 && response.data) {
+      const { accessToken, refreshToken } = response.data;
+
+      if (!accessToken || !refreshToken) {
+        throw new Error('Invalid response from Spotify service');
+      }
+
+      return { accessToken, refreshToken };
+    } else {
+      throw new Error('Failed to get Spotify access token');
+    }
+  } catch (error) {
+    console.error('Error fetching Spotify access token:', error);
+    throw error;
+  }
+};
