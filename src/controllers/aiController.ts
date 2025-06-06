@@ -21,16 +21,20 @@ export const createPlaylist = async (
         );
 
       if (preferencesDetails) {
-        const aiMessage = `תכין בבקשה רשימה של 25 שירים שמתאימים לקריטריונים הבאים: 
-        אמנים אהובים: ${preferencesDetails.artists.join(', ')}
-        ז'אנרים אהובים: ${preferencesDetails.genres.join(', ')}
-        שיר אהוב: ${preferencesDetails.song}
-        מצב רוח / תחושה של הפלייליסט: ${vibe}
-        אירוע מיוחד שבשבילו הפלייליסט: ${activity}.
-        הרשימה חייבת להופיע בסדר הקפדני הבא: 
-        שם שיר - שם אמן
-        הפורמט חייב להיות תקף לכל השירים, השיר והאמן חייבים להישאר בשפת המקור שלהם. 
-        אם אי אפשר למצוא את השיר אצל הזמר בספוטיפיי אל תחזיר אותו`;
+        const aiMessage = `Please create a list of 25 songs (a playlist) that fit to my following critiria: 
+        favorite artists: ${preferencesDetails.artists.join(', ')}
+        favorite genres: ${preferencesDetails.genres.join(', ')}
+        favorite song: ${preferencesDetails.song}
+        plalist's vibe: ${vibe}
+        playlist's occasion: ${activity}.
+        prefer vibe over genres if they don't match.
+        The list must appear in this strict format: 
+        song name - artist
+        Always song name first, then artist.
+        the artist name should always appear in English. the song name should appear in its original language.
+        This format must be used for *all songs*. Do **not** add any translations, parentheses, or extra information. 
+        Only return real, existing songs that are available on Spotify.`;
+
         const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
 
         const songsList: Song[] = parseSongs(generatedPlaylist);

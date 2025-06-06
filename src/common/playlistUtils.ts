@@ -1,12 +1,12 @@
 import { Song } from '../models';
-import { spotifyService } from '../services/spotifyService';
+import { getSpotifyService } from '../services/spotifyService';
 
 export const validateSongsList = async (
   songsList: Song[],
   accessToken: string
 ): Promise<Song[]> => {
   try {
-    const response = await spotifyService.post(
+    const response = await getSpotifyService().post(
       '/spotifyAPI/playlists/validatePlaylist',
       {
         songsList,

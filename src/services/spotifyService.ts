@@ -9,7 +9,7 @@ interface AuthTokens {
   refreshToken: string;
 }
 
-function getSpotifyService(): AxiosInstance {
+export function getSpotifyService(): AxiosInstance {
   if (!spotifyService) {
     if (!config.spotifyServiceUrl) {
       throw new Error('spotifyServiceUrl is not defined in config.');
