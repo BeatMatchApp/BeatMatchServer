@@ -3,6 +3,11 @@ import config from '../config/config';
 
 let spotifyService: AxiosInstance | null = null;
 
+interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
 function getSpotifyService(): AxiosInstance {
   if (!spotifyService) {
     if (!config.spotifyServiceUrl) {
@@ -45,7 +50,7 @@ export const refreshSpotifyAccessToken = async (
 
 export const getSpotifyTokensByCode = async (
   code: string
-): Promise<{ accessToken: string; refreshToken: string }> => {
+): Promise<AuthTokens> => {
   try {
     const response = await getSpotifyService().post('/spotifyAPI/getTokens', {
       code,
@@ -55,15 +60,15 @@ export const getSpotifyTokensByCode = async (
       const { accessToken, refreshToken } = response.data;
 
       if (!accessToken || !refreshToken) {
-        throw new Error('Invalid response from Spotify service');
+        throw new Error('Missing tokens in Spotify service response');
       }
 
       return { accessToken, refreshToken };
     } else {
-      throw new Error('Failed to get Spotify access token');
+      throw new Error('Failed to get Spotify token');
     }
   } catch (error) {
-    console.error('Error fetching Spotify access token:', error);
+    console.error('Error fetching Spotify tokens:', error);
     throw error;
   }
 };

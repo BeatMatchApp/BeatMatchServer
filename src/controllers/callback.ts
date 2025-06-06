@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 import { createTokenCookies } from '../services/refreshToken';
 import config from '../config/config';
-import {
-  getSpotifyTokensByCode,
-  refreshSpotifyAccessToken,
-} from '../services/spotifyService';
+import { getSpotifyTokensByCode } from '../services/spotifyService';
 
 export const callbackHandler = async (
   req: Request,
@@ -13,22 +10,15 @@ export const callbackHandler = async (
   const code = req.query?.code as string;
 
   try {
-    const tokens = await getSpotifyTokensByCode(code);
+    const { refreshToken, accessToken } = await getSpotifyTokensByCode(code);
 
-    const refreshToken = tokens.refreshToken;
-    const accessToken = tokens.accessToken;
+    createTokenCookies(res, accessToken, refreshToken);
+    res.redirect(`${config.beatMatchClientURL}/loginPage`);
 
-    if (refreshToken && accessToken) {
-      createTokenCookies(res, accessToken, refreshToken);
-      res.redirect(`${config.beatMatchClientURL}/loginPage`);
-
-      return;
-    } else {
-      res.status(400).json({ message: 'Missing tokens in request body.' });
-      return;
-    }
+    return;
   } catch (error) {
     console.error('Error in callback handler:', error);
+
     res
       .status(500)
       .json({ message: 'An error occurred while processing the callback.' });
