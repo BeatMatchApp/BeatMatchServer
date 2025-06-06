@@ -15,13 +15,13 @@ export class BaseProxy {
     return {
       target: config.target,
       pathRewriteBase: config.pathRewriteBase || '',
-      secure: config.secure !== undefined ? config.secure : true,
+      secure: config.secure !== undefined ? config.secure : false,
       applyAuth: config.applyAuth !== undefined ? config.applyAuth : false,
     };
   }
 
   protected createProxyMiddleware(config: ProxyConfig): RequestHandler {
-    const { target, pathRewriteBase = '', secure = true } = config;
+    const { target, pathRewriteBase = '', secure = false } = config;
 
     return createProxyMiddleware({
       target,
