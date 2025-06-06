@@ -6,7 +6,6 @@ import https from 'https';
 export type ProxyConfig = {
   target: string;
   pathRewriteBase?: string;
-  secure?: boolean;
   applyAuth?: boolean;
 };
 
@@ -15,13 +14,12 @@ export class BaseProxy {
     return {
       target: config.target,
       pathRewriteBase: config.pathRewriteBase || '',
-      secure: config.secure !== undefined ? config.secure : false,
       applyAuth: config.applyAuth !== undefined ? config.applyAuth : false,
     };
   }
 
   protected createProxyMiddleware(config: ProxyConfig): RequestHandler {
-    const { target, pathRewriteBase = '', secure = false } = config;
+    const { target, pathRewriteBase = '' } = config;
 
     return createProxyMiddleware({
       target,
