@@ -1,9 +1,8 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { UsersDAL } from "./dal/users";
-import { CustomRequest } from "./models";
 
 export const loginHandler = async (
-  req: CustomRequest,
+  req: Request,
   res: Response
 ): Promise<void> => {
   if (req.user) {

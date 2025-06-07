@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
 import https from 'https';
+import { Song } from '../models';
 
 let spotifyService: AxiosInstance | null = null;
 
@@ -9,7 +10,7 @@ interface AuthTokens {
   refreshToken: string;
 }
 
-function getSpotifyService(): AxiosInstance {
+export function getSpotifyService(): AxiosInstance {
   if (!spotifyService) {
     if (!config.spotifyServiceUrl) {
       throw new Error('spotifyServiceUrl is not defined in config.');
@@ -73,6 +74,26 @@ export const getSpotifyTokensByCode = async (
     }
   } catch (error) {
     console.error('Error fetching Spotify tokens:', error);
+    throw error;
+  }
+};
+
+export const validateSongsList = async (
+  songsList: Song[],
+  accessToken: string
+): Promise<Song[]> => {
+  try {
+    const response = await getSpotifyService().post(
+      '/spotifyAPI/playlists/validatePlaylist',
+      {
+        songsList,
+        accessToken,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Error validating playlist', error);
     throw error;
   }
 };

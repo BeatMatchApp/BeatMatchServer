@@ -5,6 +5,7 @@ import userRoutes from './user/userData';
 import authRoutes from './user/auth';
 import metaRoute from './meta';
 import authMiddleware from '../middlewares/authMiddleware';
+import MusicalAIRoutes from './aiRoutes';
 import spotifyRoutes from './spotifyRoutes';
 import userPreferencesRoutes from './userPreferencesRoutes';
 import { callbackHandler } from '../controllers/callback';
@@ -17,6 +18,7 @@ router.use('/auth', authRoutes);
 router.use('/playlist', authMiddleware, playlistRoutes);
 router.use('/userPreferences', authMiddleware, userPreferencesRoutes);
 router.use('/meta', authMiddleware, metaRoute);
+router.use('/musicalAIConsultant', authMiddleware, MusicalAIRoutes);
 router.use('/callback', callbackHandler);
 
 export default router;

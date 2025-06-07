@@ -17,7 +17,7 @@ const getOpenAI = (): OpenAI => {
 
 export const getAIResponse = async (
   prompt: string,
-  systemAssistantMessage: string = 'You are a helpful assistant.',
+  systemAssistantMessage: string = 'You are a helpful assistant that generates music playlist suggestions based on user preferences',
   options: {
     model?: string;
     maxTokens?: number;
@@ -26,12 +26,12 @@ export const getAIResponse = async (
   try {
     const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: options.model || 'gpt-3.5-turbo',
+      model: options.model || 'gpt-4o',
       messages: [
         { role: 'system', content: systemAssistantMessage },
         { role: 'user', content: prompt },
       ],
-      temperature: 0.7,
+      temperature: 0.3,
       max_tokens: options.maxTokens,
     });
 

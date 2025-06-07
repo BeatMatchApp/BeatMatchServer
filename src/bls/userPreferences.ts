@@ -1,11 +1,20 @@
-import { Request } from "express";
-import { UserPreferences } from "../models";
-import { UsersPreferencesDAL } from "../dal/usersPreferences";
+import { Request } from 'express';
+import { UserPreferences } from '../models';
+import { UsersPreferencesDAL } from '../dal/usersPreferences';
+
+const getUserPreferences = async (
+  userId: string
+): Promise<UserPreferences | undefined> => {
+  const preferences: UserPreferences =
+    await UsersPreferencesDAL.getPreferencesByUser(userId);
+
+  return preferences;
+};
 
 const upsertUserPreferences = async (
   req: Request
 ): Promise<UserPreferences | undefined> => {
-  const preferences: Omit<UserPreferences, "userId"> = req.body.preferences;
+  const preferences: Omit<UserPreferences, 'userId'> = req.body.preferences;
 
   if (
     !preferences.artists ||
@@ -25,4 +34,4 @@ const upsertUserPreferences = async (
   return savedPreferences;
 };
 
-export { upsertUserPreferences };
+export { upsertUserPreferences, getUserPreferences };

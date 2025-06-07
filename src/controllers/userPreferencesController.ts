@@ -1,7 +1,6 @@
-import { Request, Response } from "express";
-import { UserPreferences } from "../models";
-import * as UserPreferencesBL from "../bls/userPreferences";
-import { UsersPreferencesDAL } from "../dal/usersPreferences";
+import { Request, Response } from 'express';
+import { UserPreferences } from '../models';
+import * as UserPreferencesBL from '../bls/userPreferences';
 
 export const upsertPreferences = async (
   req: Request,
@@ -9,7 +8,7 @@ export const upsertPreferences = async (
 ): Promise<void> => {
   try {
     if (!req.body || !req.body.preferences) {
-      res.status(400).json({ message: "Missing preferences." });
+      res.status(400).json({ message: 'Missing preferences.' });
       return;
     }
 
@@ -23,13 +22,13 @@ export const upsertPreferences = async (
     } else {
       res
         .status(500)
-        .json({ error: "An error occurred while saving preferences." });
+        .json({ error: 'An error occurred while saving preferences.' });
     }
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error('Error registering user:', error);
     res
       .status(500)
-      .json({ error: "An error occurred while saving preferences." });
+      .json({ error: 'An error occurred while saving preferences.' });
   }
 };
 
@@ -39,23 +38,23 @@ export const getPreferences = async (
 ): Promise<void> => {
   try {
     if (!req.user || !req.user.id) {
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: 'Unauthorized' });
       return;
     }
 
     const userId = req.user.id;
     const preferences: UserPreferences | undefined =
-      await UsersPreferencesDAL.getPreferencesByUser(userId);
+      await UserPreferencesBL.getUserPreferences(userId);
 
     if (preferences) {
       res.status(200).json(preferences);
     } else {
-      res.status(404).json({ message: "Preferences not found." });
+      res.status(404).json({ message: 'Preferences not found.' });
     }
   } catch (error) {
-    console.error("Error fetching user preferences:", error);
+    console.error('Error fetching user preferences:', error);
     res
       .status(500)
-      .json({ error: "An error occurred while fetching preferences." });
+      .json({ error: 'An error occurred while fetching preferences.' });
   }
 };
