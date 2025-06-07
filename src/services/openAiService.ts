@@ -31,7 +31,7 @@ export const getAIResponse = async (
         { role: 'system', content: systemAssistantMessage },
         { role: 'user', content: prompt },
       ],
-      temperature: 0.1,
+      temperature: 0.3,
       max_tokens: options.maxTokens,
     });
 

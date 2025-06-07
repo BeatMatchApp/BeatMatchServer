@@ -32,9 +32,109 @@ Content-Type: application/json
 ### create playlist
 POST http://localhost:3000/musicalAIConsultant/createPlaylist
 Content-Type: application/json
-Cookie: spotify_access_token=BQBBSiKOyRi8zWfzJ5cAh8A7FRMtTScbiNSktpWy2nHH-Vry0VQCpeQfn313KQfslxca3ojn21tiZ9-F7k7cx4V_50teipCBDFezFlZvboMADrSY0uxWc187vS8lMbTNNaEDFov00TWxxAh1Bo9fA0iWEXqEUlu5lsJk-VKNfgeLFoqziKwJkPJjMhci9SEyUzct5JbMwAjJXSJ0pwPETu-ocL_7tAkk0j5wB3GiNc1tBy1u9hi831QsOY4wP-3Z_wcAZ9dXIFZDWM-XERkvsySNr-9yDyBu8Xf0mQ4AjdE; spotify_refresh_token=AQA0tVe82jULMCxMIPz_JlbfvJsGOdmcwVVU-VGUVNl656rj5o3nFAWZu-lhj6OT_ZvHikzXPFEDw8HlxlWx_fLu8Y6SV0Arm8DGa_l3CH52Km5c8-HZSo7p9B23aQYdjQw
+Cookie: spotify_access_token=BQCGWUk5knyy4xvbqqyh5iM4ROv1Y3pczyXz4yXCUpKhrlG1-BW0onOjq9V_l-Agq3tico5Ed3IxSFTPHEyYO6w4f9M14ihcLpUJwvqNzDs2MsEDHK4uu8ZrMOiQH8jERG9NT-70wKhuZFpwclgnHIZQDSL_lEXePhvH6N-FV096mptHNzXdoKri5tcl7ltP2ihW1S_KFYEj2-tujnC_A4ULUhQSPqjhj8K5OpTP2AvhvTfLtNWb0iwROj__K4T8Oq8ObHB8KWmroCxf4o8e8E8hbZSbIEEMJu9_6pahDmc; spotify_refresh_token=AQA0tVe82jULMCxMIPz_JlbfvJsGOdmcwVVU-VGUVNl656rj5o3nFAWZu-lhj6OT_ZvHikzXPFEDw8HlxlWx_fLu8Y6SV0Arm8DGa_l3CH52Km5c8-HZSo7p9B23aQYdjQw
 
 {
     "vibe": "calm",
     "activity": "road trip"
+}
+
+
+### refresh playlist
+POST http://localhost:3000/musicalAIConsultant/refreshPlaylist
+Content-Type: application/json
+Cookie: spotify_access_token=BQB3ZBMeLni9izK-X40bmBm6D6ukXxPtHOTfPFPJbITxjgN1cD2KziJcMGqOgEXthwoxSasxnCNQ5-4phQcRwBov_BK1x3lnIpznDGpK2my_iSC5QJzyKlLCGHnpHiFsU4yZBtBbizBiAqjb4CL_PsjeZxpYppVKbY_xYvR54ucV6rnB28wwTNyQgAgIxeX8g8DjRJyGXhs7P8BoaHppFmEuZAqtltzCBQwCws9Wt8Gw_Dt78gq-iPUxbBejCCbL7kWANcxvWDTS-S7-b2BYuiAID1sap-G8i52Wcp8Or30; spotify_refresh_token=AQA0tVe82jULMCxMIPz_JlbfvJsGOdmcwVVU-VGUVNl656rj5o3nFAWZu-lhj6OT_ZvHikzXPFEDw8HlxlWx_fLu8Y6SV0Arm8DGa_l3CH52Km5c8-HZSo7p9B23aQYdjQw
+
+{
+    "vibe": "calm",
+    "activity": "road trip",
+    "songs": [
+      {
+        "name": "אהבה שקטה",
+        "artist": "Shalom Hanoch"
+      },
+      {
+        "name": "Teach Me How To Love",
+        "artist": "Shawn Mendes"
+      },
+      {
+        "name": "Black",
+        "artist": "Pearl Jam",
+        "isReplace": true
+      },
+      {
+        "name": "The Sound of Silence",
+        "artist": "Simon & Garfunkel"
+      },
+      {
+        "name": "Landslide",
+        "artist": "Fleetwood Mac"
+      },
+      {
+        "name": "Here Comes the Sun",
+        "artist": "The Beatles"
+      },
+      {
+        "name": "Drive",
+        "artist": "Incubus"
+      },
+      {
+        "name": "Dust in the Wind",
+        "artist": "Kansas"
+      },
+      {
+        "name": "Good Riddance (Time of Your Life)",
+        "artist": "Green Day"
+      },
+      {
+        "name": "Patience",
+        "artist": "Guns N' Roses"
+      },
+      {
+        "name": "Under the Bridge",
+        "artist": "Red Hot Chili Peppers"
+      },
+      {
+        "name": "No Rain",
+        "artist": "Blind Melon"
+      },
+      {
+        "name": "Heartbeats",
+        "artist": "José González"
+      },
+      {
+        "name": "Skinny Love",
+        "artist": "Bon Iver"
+      },
+      {
+        "name": "Harvest Moon",
+        "artist": "Neil Young"
+      },
+      {
+        "name": "Fast Car",
+        "artist": "Tracy Chapman"
+      },
+      {
+        "name": "Banana Pancakes",
+        "artist": "Jack Johnson",
+        "isReplace": true
+      },
+      {
+        "name": "Come Away With Me",
+        "artist": "Norah Jones"
+      },
+      {
+        "name": "Holocene",
+        "artist": "Bon Iver",
+        "isReplace": true
+      },
+      {
+        "name": "Let It Be",
+        "artist": "The Beatles"
+      },
+      {
+        "name": "The Night We Met",
+        "artist": "Lord Huron"
+      }
+    ]
 }

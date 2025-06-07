@@ -3,7 +3,7 @@ import { PlaylistDetails, Song, UserSong, UserPreferences } from '../models';
 import * as UserPreferencesBL from '../bls/userPreferences';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from '../common/parse';
-import { validateSongsList } from '../common/playlistUtils';
+import { createSongsList, strictOrders } from '../common/playlistUtils';
 
 export const createPlaylist = async (
   req: Request,
@@ -12,13 +12,11 @@ export const createPlaylist = async (
   try {
     const { vibe, activity } = req.body;
 
-    if (!vibe || !activity) {
+    if (!vibe || !activity || !req.user) {
       res.status(400).json({ message: "missing user's required information" });
     } else {
       const preferencesDetails: UserPreferences | undefined =
-        await UserPreferencesBL.getUserPreferences(
-          '0cdf286f-04b9-508b-bcb1-17818a48cc43'
-        );
+        await UserPreferencesBL.getUserPreferences(req.user.id);
 
       if (preferencesDetails) {
         const aiMessage = `Please create a list of 25 songs (a playlist) that fit to my following critiria: 
@@ -27,25 +25,14 @@ export const createPlaylist = async (
         favorite song: ${preferencesDetails.song}
         plalist's vibe: ${vibe}
         playlist's occasion: ${activity}.
-        prefer vibe over genres if they don't match.
-        The list must appear in this strict format: 
-        song name - artist
-        Always song name first, then artist.
-        the artist name should always appear in English. the song name should appear in its original language.
-        This format must be used for *all songs*. Do **not** add any translations, parentheses, or extra information. 
-        Only return real, existing songs that are available on Spotify.`;
+        ${strictOrders}.`;
 
-        const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
-
-        const songsList: Song[] = parseSongs(generatedPlaylist);
-
-        console.log('before validate', req.cookies.spotify_access_token);
-        const validatedSongs: Song[] = await validateSongsList(
-          songsList,
-          req.cookies.spotify_access_token
+        const generatedPlaylist: Song[] = await createSongsList(
+          req.cookies.spotify_access_token,
+          aiMessage
         );
 
-        res.json({ playlist: validatedSongs });
+        res.json({ playlist: generatedPlaylist });
       }
     }
   } catch (error) {
@@ -66,8 +53,8 @@ export const refreshPlaylist = async (
     if (
       !playlistDetails.vibe ||
       !playlistDetails.activity ||
-      !playlistDetails.songs ||
-      !req.user
+      !req.user ||
+      !playlistDetails.songs
     ) {
       res.status(400).json({ message: 'missing required information' });
     } else {
@@ -78,23 +65,25 @@ export const refreshPlaylist = async (
         (song: UserSong) => song.name
       );
       const songsToReplace: string[] = playlistDetails.songs
-        .filter((song: UserSong) => !song.isReplace)
+        .filter((song: UserSong) => song.isReplace)
         .map((song: UserSong) => song.name);
 
       if (preferencesDetails) {
-        const aiMessage = `Please replace the songs below with songs that fit to my following critiria: 
+        const aiMessage = `Please replace the 'songs to replace' with songs that fit to my following critiria: 
           favorite artists: ${preferencesDetails.artists.join(', ')}
           favorite genres: ${preferencesDetails.genres.join(', ')}
           plalist's vibe: ${playlistDetails.vibe}
           playlist's occasion: ${playlistDetails.activity}
           current songs list: ${allSongNames.join(', ')}
           songs to replace: ${songsToReplace.join(', ')}.
-          the new songs list should appear as 'song name - artist' pairs`;
+          ${strictOrders}.`;
 
-        const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
-        const songsList: Song[] = parseSongs(generatedPlaylist);
+        const generatedPlaylist: Song[] = await createSongsList(
+          req.cookies.spotify_access_token,
+          aiMessage
+        );
 
-        res.json({ updatedPlaylist: songsList });
+        res.json({ updatedPlaylist: generatedPlaylist });
       }
     }
   } catch (error) {
