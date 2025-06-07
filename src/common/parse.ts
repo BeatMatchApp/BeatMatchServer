@@ -1,24 +1,27 @@
-import { Song } from "../models";
-import { aiParsingError } from "./errors";
+import { Song } from '../models';
+import { aiParsingError } from './errors';
 
-const NUMERIC_REGEX: RegExp = /^\d+\.\s(.+)\s-\s(.+)$/;
-const SONG_FORMAT_REGEX: RegExp = /^\d+\.\s.+\s-\s.+$/;
+const NUMERIC_ORDER_REGEX: RegExp = /^\d+\.\s*/;
+const SONG_FORMAT_REGEX: RegExp = /^[^-–]+[-–][^-–]+$/;
+const DASHES_REGEX: RegExp = /\s[-–]\s/;
 
 export const parseSongs = (text: string): Song[] => {
   try {
-    const seperatedLines: string[] = text
-      .split("\n")
-      .filter((song: string) => SONG_FORMAT_REGEX.test(song.trim()));
+    const separatedLines: string[] = text
+      .split('\n')
+      .map((line) => line.replace(NUMERIC_ORDER_REGEX, '').trim())
+      .filter((line) => SONG_FORMAT_REGEX.test(line));
 
-    const songsList: Song[] = seperatedLines
+    const songsList: Song[] = separatedLines
       .map((line: string) => {
-        const match = line.match(NUMERIC_REGEX);
+        const separatorMatch = line.match(DASHES_REGEX);
+        if (!separatorMatch) return null;
 
-        if (!match) {
-          return null;
-        }
+        const separator = separatorMatch[0];
+        const [title, artist] = line.split(separator);
 
-        const [_, title, artist] = match;
+        if (!title || !artist) return null;
+
         const song: Song = { name: title.trim(), artist: artist.trim() };
 
         return song;
