@@ -1,6 +1,6 @@
-import OpenAI from "openai";
-import config from "../config/config";
-import { ApiError } from "../common/errors";
+import OpenAI from 'openai';
+import config from '../config/config';
+import { ApiError } from '../common/errors';
 
 let openaiInstance: OpenAI | null = null;
 
@@ -8,9 +8,8 @@ function getOpenAI(): OpenAI {
   if (!openaiInstance) {
     const key = config.openAiApiKey;
     if (!key) {
-      throw new Error("OPENAI_API_KEY is missing");
+      throw new Error('OPENAI_API_KEY is missing');
     }
-    console.log("Creating OpenAI client with key:", key);
     openaiInstance = new OpenAI({ apiKey: key });
   }
   return openaiInstance;
@@ -18,19 +17,19 @@ function getOpenAI(): OpenAI {
 
 export const getAIResponse = async (
   prompt: string,
-  systemAssistantMessage: string = "You are a helpful assistant.",
+  systemAssistantMessage: string = 'You are a helpful assistant.',
   options: {
     model?: string;
     maxTokens?: number;
   } = {}
 ): Promise<string> => {
   try {
-    const openai = getOpenAI(); // 👈 safe, delayed creation
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
-      model: options.model || "gpt-3.5-turbo",
+      model: options.model || 'gpt-3.5-turbo',
       messages: [
-        { role: "system", content: systemAssistantMessage },
-        { role: "user", content: prompt },
+        { role: 'system', content: systemAssistantMessage },
+        { role: 'user', content: prompt },
       ],
       temperature: 0.7,
       max_tokens: options.maxTokens,
@@ -39,15 +38,15 @@ export const getAIResponse = async (
     const text = completion.choices[0]?.message?.content;
 
     if (!text) {
-      throw new ApiError(500, "No AI response generated");
+      throw new ApiError(500, 'No AI response generated');
     }
 
     return text.trim();
   } catch (error) {
-    console.error("Error generating AI response:", error);
+    console.error('Error generating AI response:', error);
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, "Failed to generate AI response");
+    throw new ApiError(500, 'Failed to generate AI response');
   }
 };
