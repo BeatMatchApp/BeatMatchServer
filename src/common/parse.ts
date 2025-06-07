@@ -1,9 +1,10 @@
+import {
+  DASHES_REGEX,
+  NUMERIC_ORDER_REGEX,
+  SONG_FORMAT_REGEX,
+} from '../consts/regex';
 import { Song } from '../models';
-import { aiParsingError } from './errors';
-
-const NUMERIC_ORDER_REGEX: RegExp = /^\d+\.\s*/;
-const SONG_FORMAT_REGEX: RegExp = /^[^-–]+[-–][^-–]+$/;
-const DASHES_REGEX: RegExp = /\s[-–]\s/;
+import { AIParsingError } from './errors';
 
 export const parseSongs = (text: string): Song[] => {
   try {
@@ -30,6 +31,6 @@ export const parseSongs = (text: string): Song[] => {
 
     return songsList;
   } catch (err) {
-    throw new aiParsingError(500);
+    throw new AIParsingError(500);
   }
 };

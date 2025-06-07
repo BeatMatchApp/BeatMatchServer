@@ -1,5 +1,5 @@
 import { Song } from '../models';
-import { getSpotifyService } from '../services/spotifyService';
+import { validateSongsList } from '../services/spotifyService';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from './parse';
 
@@ -17,8 +17,6 @@ export const createSongsList = async (
   aiMessage: string
 ): Promise<Song[]> => {
   const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
-
-  console.log(generatedPlaylist);
 
   const songsList: Song[] = parseSongs(generatedPlaylist);
   const uniqueSongsList: Song[] = removeDuplicatedSongs(songsList);
@@ -44,24 +42,4 @@ const removeDuplicatedSongs = (songsList: Song[]): Song[] => {
   });
 
   return noDuplicatedSongsList;
-};
-
-const validateSongsList = async (
-  songsList: Song[],
-  accessToken: string
-): Promise<Song[]> => {
-  try {
-    const response = await getSpotifyService().post(
-      '/spotifyAPI/playlists/validatePlaylist',
-      {
-        songsList,
-        accessToken,
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error('Error validating playlist', error);
-    throw error;
-  }
 };
