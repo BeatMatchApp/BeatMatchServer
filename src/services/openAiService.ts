@@ -4,7 +4,7 @@ import { ApiError } from '../common/errors';
 
 let openaiInstance: OpenAI | null = null;
 
-function getOpenAI(): OpenAI {
+const getOpenAI = (): OpenAI => {
   if (!openaiInstance) {
     const key = config.openAiApiKey;
     if (!key) {
@@ -13,7 +13,7 @@ function getOpenAI(): OpenAI {
     openaiInstance = new OpenAI({ apiKey: key });
   }
   return openaiInstance;
-}
+};
 
 export const getAIResponse = async (
   prompt: string,

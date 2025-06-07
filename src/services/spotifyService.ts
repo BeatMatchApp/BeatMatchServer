@@ -1,7 +1,13 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
+import https from 'https';
 
 let spotifyService: AxiosInstance | null = null;
+
+interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
 
 function getSpotifyService(): AxiosInstance {
   if (!spotifyService) {
@@ -9,12 +15,15 @@ function getSpotifyService(): AxiosInstance {
       throw new Error('spotifyServiceUrl is not defined in config.');
     }
 
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
     spotifyService = axios.create({
       baseURL: config.spotifyServiceUrl,
       headers: {
         'Content-type': 'application/json',
       },
       withCredentials: true,
+      httpsAgent,
     });
   }
 
@@ -39,6 +48,31 @@ export const refreshSpotifyAccessToken = async (
     }
   } catch (error) {
     console.error('Error refreshing Spotify access token:', error);
+    throw error;
+  }
+};
+
+export const getSpotifyTokensByCode = async (
+  code: string
+): Promise<AuthTokens> => {
+  try {
+    const response = await getSpotifyService().post('/spotifyAPI/getTokens', {
+      code,
+    });
+
+    if (response.status === 200 && response.data) {
+      const { accessToken, refreshToken } = response.data;
+
+      if (!accessToken || !refreshToken) {
+        throw new Error('Missing tokens in Spotify service response');
+      }
+
+      return { accessToken, refreshToken };
+    } else {
+      throw new Error('Failed to get Spotify token');
+    }
+  } catch (error) {
+    console.error('Error fetching Spotify tokens:', error);
     throw error;
   }
 };
