@@ -11,8 +11,6 @@ dotenv.config();
 createServer().then((app) => {
   let port: number;
 
-  app.use(express.static('public/client'));
-
   app.use('*', (_, res) => {
     res.sendFile('client/index.html', { root: 'public' });
   });
