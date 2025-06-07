@@ -1,5 +1,5 @@
-import { Song } from '../models';
-import { validateSongsList } from '../services/spotifyService';
+import {Song, UserCredentials} from '../models';
+import { getSpotifyService } from '../services/spotifyService';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from './parse';
 
@@ -13,17 +13,19 @@ export const strictOrders: string = `prefer vibe over genres if they don't match
  Only return real, existing songs that are available on Spotify`;
 
 export const createSongsList = async (
-  spotifyToken: string,
+  userCreds: UserCredentials,
   aiMessage: string
 ): Promise<Song[]> => {
   const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
+
+  console.log(generatedPlaylist);
 
   const songsList: Song[] = parseSongs(generatedPlaylist);
   const uniqueSongsList: Song[] = removeDuplicatedSongs(songsList);
 
   const validatedSongs: Song[] = await validateSongsList(
     uniqueSongsList,
-    spotifyToken
+    userCreds
   );
 
   return validatedSongs;
@@ -42,4 +44,26 @@ const removeDuplicatedSongs = (songsList: Song[]): Song[] => {
   });
 
   return noDuplicatedSongsList;
+};
+
+const validateSongsList = async (
+  songsList: Song[],
+  userCreds: UserCredentials
+): Promise<Song[]> => {
+  try {
+    const response = await getSpotifyService().post(
+      '/spotifyAPI/playlists/validatePlaylist',
+        {
+          songsList,
+        },
+        {headers:{
+            'x-user-credentials': JSON.stringify(userCreds)
+        }}
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Error validating playlist', error);
+    throw error;
+  }
 };

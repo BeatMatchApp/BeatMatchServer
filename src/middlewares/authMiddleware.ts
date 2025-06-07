@@ -21,7 +21,7 @@ const authMiddleware = async (
     }
   }
 
-  req.user = { id: userId };
+  req.user = { id: userId, accessToken: req.cookies[ACCESS_COOKIE], refreshToken: req.cookies[REFRESH_COOKIE]};
   next();
 };
 

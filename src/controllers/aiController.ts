@@ -16,7 +16,9 @@ export const createPlaylist = async (
       res.status(400).json({ message: "missing user's required information" });
     } else {
       const preferencesDetails: UserPreferences | undefined =
-        await UserPreferencesBL.getUserPreferences(req.user.id);
+        await UserPreferencesBL.getUserPreferences(
+          req.user.id
+        );
 
       if (preferencesDetails) {
         const aiMessage = `Please create a list of 25 songs (a playlist) that fit to my following critiria: 
@@ -28,7 +30,7 @@ export const createPlaylist = async (
         ${strictOrders}.`;
 
         const generatedPlaylist: Song[] = await createSongsList(
-          req.cookies.spotify_access_token,
+          req.user,
           aiMessage
         );
 
@@ -44,8 +46,8 @@ export const createPlaylist = async (
 };
 
 export const refreshPlaylist = async (
-  req: Request,
-  res: Response
+    req: Request,
+    res: Response
 ): Promise<void> => {
   try {
     const playlistDetails: PlaylistDetails = req.body;
@@ -59,27 +61,32 @@ export const refreshPlaylist = async (
       res.status(400).json({ message: 'missing required information' });
     } else {
       const preferencesDetails: UserPreferences | undefined =
-        await UserPreferencesBL.getUserPreferences(req.user.id);
+          await UserPreferencesBL.getUserPreferences(req.user.id);
 
       const allSongNames: string[] = playlistDetails.songs.map(
-        (song: UserSong) => song.name
+          (song: UserSong) => song.name
       );
       const songsToReplace: string[] = playlistDetails.songs
         .filter((song: UserSong) => song.isReplace)
         .map((song: UserSong) => song.name);
 
       if (preferencesDetails) {
-        const aiMessage = `Please replace the 'songs to replace' with songs that fit to my following critiria: 
+        let aiMessage = `Please replace the 'songs to replace' with songs that fit to my following critiria: 
           favorite artists: ${preferencesDetails.artists.join(', ')}
           favorite genres: ${preferencesDetails.genres.join(', ')}
           plalist's vibe: ${playlistDetails.vibe}
           playlist's occasion: ${playlistDetails.activity}
           current songs list: ${allSongNames.join(', ')}
-          songs to replace: ${songsToReplace.join(', ')}.
-          ${strictOrders}.`;
+          songs to replace: ${songsToReplace.join(', ')}.`;
 
+        if (playlistDetails.requestChangesText && playlistDetails.requestChangesText.trim()) {
+          aiMessage += `\nAdditional requests: ${playlistDetails.requestChangesText.trim()}`;
+        }
+
+        aiMessage += `\n${strictOrders}`;
+        console.log(aiMessage)
         const generatedPlaylist: Song[] = await createSongsList(
-          req.cookies.spotify_access_token,
+          req.user,
           aiMessage
         );
 
@@ -89,8 +96,8 @@ export const refreshPlaylist = async (
   } catch (error) {
     console.error('Error getting new songs:', error);
     res
-      .status(500)
-      .json({ error: 'An error occurred while getting new songs.' });
+        .status(500)
+        .json({ error: 'An error occurred while getting new songs.' });
   }
 };
 
