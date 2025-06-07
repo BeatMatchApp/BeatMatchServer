@@ -11,8 +11,6 @@ dotenv.config();
 createServer().then((app) => {
   let port: number;
 
-  app.use(express.static('public/client'));
-
   app.use('*', (_, res) => {
     res.sendFile('client/index.html', { root: 'public' });
   });
@@ -21,11 +19,9 @@ createServer().then((app) => {
   server = http.createServer(app);
 
   if (config.nodeEnv !== 'production') {
-    console.log('development');
     port = config.port;
     server = http.createServer(app);
   } else {
-    console.log('production');
     port = config.prodPort;
 
     const certs = {
