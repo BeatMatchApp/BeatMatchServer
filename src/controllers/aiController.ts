@@ -28,7 +28,7 @@ export const createPlaylist = async (
         playlist's occasion: ${activity}.
         ${strictOrders}.`;
 
-        const generatedPlaylist: Song[] = await createSongsList(
+        const generatedPlaylist: SpotifySong[] = await createSongsList(
           req.user,
           aiMessage
         );
@@ -83,7 +83,7 @@ export const refreshPlaylist = async (
           ${additionalReq ? `Additional requests: ${additionalReq}` : ''}
           ${strictOrders}`;
 
-        const generatedPlaylist: Song[] = await createSongsList(
+        const generatedPlaylist: SpotifySong[] = await createSongsList(
           req.user,
           aiMessage
         );
