@@ -22,8 +22,8 @@ const PlaylistsDAL = {
         spotifyPlaylistId: playlist.spotifyPlaylistId,
         name: playlist.name,
         description: playlist.description,
-        vibe: playlist.vibe,
-        activity: playlist.activity
+        mood: playlist.mood,
+        event: playlist.event
       })
       .returning("*")
       .then(rows => rows[0]);

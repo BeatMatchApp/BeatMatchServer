@@ -9,9 +9,9 @@ export const createPlaylist = async (req: Request, res: Response): Promise<void>
         }
 
         const userId = req.user.id;
-        const { name, description, songs, vibe, activity } = req.body;
+        const { name, description, songs, mood, event } = req.body;
 
-        if (!name || !vibe || !activity) {
+        if (!name || !mood || !event) {
             throw new ApiError(400, 'Missing required fields');
         }
 
@@ -21,8 +21,8 @@ export const createPlaylist = async (req: Request, res: Response): Promise<void>
                 description: description || '',
                 name,
                 songs,
-                vibe,
-                activity
+                mood,
+                event
             },
             req.user
         );

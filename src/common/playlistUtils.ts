@@ -1,4 +1,4 @@
-import {Song, UserCredentials} from '../models';
+import {Playlist, Song, UserCredentials} from '../models';
 import { getSpotifyService } from '../services/spotifyService';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from './parse';
@@ -18,9 +18,6 @@ export const createSongsList = async (
   aiMessage: string
 ): Promise<SpotifySong[]> => {
   const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
-
-  console.log(generatedPlaylist);
-
   const songsList: Song[] = parseSongs(generatedPlaylist);
   const uniqueSongsList: Song[] = removeDuplicatedSongs(songsList);
 
@@ -67,4 +64,25 @@ const validateSongsList = async (
     console.error('Error validating playlist', error);
     throw error;
   }
+};
+
+
+export const convertSpotifyResponseToPlaylist = (spotifyData, basePlaylist: Partial<Playlist>): Partial<Playlist> => {
+  const updatedPlaylist = { ...basePlaylist };
+
+  // Map tracks if they exist
+  if (spotifyData && Array.isArray(spotifyData.tracks)) {
+    updatedPlaylist.songs = spotifyData.tracks.map((track: Song) => ({
+      name: track.name,
+      artist: track.artist,
+    }));
+  }
+
+  // Map other Spotify fields
+  if (spotifyData) {
+    updatedPlaylist.url = spotifyData.url || updatedPlaylist.url || '';
+    updatedPlaylist.imageUrl = spotifyData.imageUrl || updatedPlaylist.imageUrl || '';
+  }
+
+  return updatedPlaylist;
 };

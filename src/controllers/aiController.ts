@@ -11,9 +11,9 @@ export const createPlaylist = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { vibe, activity } = req.body;
+    const { mood, event } = req.body;
 
-    if (!vibe || !activity || !req.user) {
+    if (!mood || !event || !req.user) {
       res.status(400).json({ message: "missing user's required information" });
     } else {
       const preferencesDetails: UserPreferences | undefined =
@@ -24,8 +24,8 @@ export const createPlaylist = async (
         favorite artists: ${preferencesDetails.artists.join(', ')}
         favorite genres: ${preferencesDetails.genres.join(', ')}
         favorite song: ${preferencesDetails.song}
-        plalist's vibe: ${vibe}
-        playlist's occasion: ${activity}.
+        plalist's vibe: ${mood}
+        playlist's occasion: ${event}.
         ${strictOrders}.`;
 
         const generatedPlaylist: SpotifySong[] = await createSongsList(
@@ -52,8 +52,8 @@ export const refreshPlaylist = async (
     const playlistDetails: PlaylistDetails = req.body;
 
     if (
-      !playlistDetails.vibe ||
-      !playlistDetails.activity ||
+      !playlistDetails.mood ||
+      !playlistDetails.event ||
       !req.user ||
       !playlistDetails.songs
     ) {
@@ -76,8 +76,8 @@ export const refreshPlaylist = async (
         const aiMessage = `Please replace the 'songs to replace' with songs that fit to my following critiria: 
           favorite artists: ${preferencesDetails.artists.join(', ')}
           favorite genres: ${preferencesDetails.genres.join(', ')}
-          plalist's vibe: ${playlistDetails.vibe}
-          playlist's occasion: ${playlistDetails.activity}
+          plalist's vibe: ${playlistDetails.mood}
+          playlist's occasion: ${playlistDetails.event}
           current songs list: ${allSongNames.join(', ')}
           songs to replace: ${songsToReplace.join(', ')}.
           ${additionalReq ? `Additional requests: ${additionalReq}` : ''}
@@ -107,8 +107,8 @@ export const suggestSongByPlaylist = async (
     const playlistDetails: PlaylistDetails = req.body;
 
     if (
-      !playlistDetails.vibe ||
-      !playlistDetails.activity ||
+      !playlistDetails.mood ||
+      !playlistDetails.event ||
       !playlistDetails.songs ||
       !req.user
     ) {
@@ -116,8 +116,8 @@ export const suggestSongByPlaylist = async (
     } else {
       const aiMessage = `Please suggest a song based on this songs list and playlist details:
          songs list: ${playlistDetails.songs.join(', ')}
-         plalist's vibe: ${playlistDetails.vibe}
-         playlist's occasion: ${playlistDetails.activity}.
+         plalist's vibe: ${playlistDetails.mood}
+         playlist's occasion: ${playlistDetails.event}.
          the song should appear as 'song name - artist'`;
 
       const suggestedSong = await openAiService.getAIResponse(aiMessage);

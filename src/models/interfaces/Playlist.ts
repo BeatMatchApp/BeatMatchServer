@@ -5,6 +5,7 @@ export interface Song {
 }
 
 export interface Playlist {
+  // DB Fields
   id: string;
   userId: string;
   spotifyPlaylistId: string;
@@ -12,7 +13,11 @@ export interface Playlist {
   description: string;
   creationDate: Date;
   lastUpdatedDate: Date;
-  vibe: string;
-  activity: string;
+  mood: string;
+  event: string;
+
+  // External Fields
   songs?: Song[];
+  url?: string;
+  imageUrl?: string;
 }

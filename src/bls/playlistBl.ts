@@ -4,6 +4,10 @@ import config from '../config/config';
 import {PlaylistsDAL} from '../dal/playlists';
 import {v4 as uuidv4} from 'uuid';
 import {ApiError} from "../common/errors";
+import {convertSpotifyResponseToPlaylist} from "../common/playlistUtils";
+import {getSpotifyHeaders} from "../common/spotifyUtils";
+
+
 
 export const createPlaylist = async (
   playlist: Partial<Playlist>,
@@ -18,14 +22,11 @@ export const createPlaylist = async (
       },
       {
         withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-credentials': JSON.stringify(userCredentials)
-        }
+        headers: getSpotifyHeaders(userCredentials)
       }
     );
 
-    if (!spotifyResponse.data || !spotifyResponse.data.id) {
+    if (!spotifyResponse.data?.id) {
       throw new Error('Failed to create playlist in Spotify');
     }
 
@@ -33,11 +34,14 @@ export const createPlaylist = async (
       ...playlist,
       id: uuidv4(),
       spotifyPlaylistId: spotifyResponse.data.id,
-      vibe: playlist.vibe,
-      activity: playlist.activity,
+      mood: playlist.mood,
+      event: playlist.event,
     };
 
-    return await PlaylistsDAL.createPlaylist(playlistWithId);
+    const createdPlaylist = await PlaylistsDAL.createPlaylist(playlistWithId);
+    const completePlaylist = convertSpotifyResponseToPlaylist(spotifyResponse.data, createdPlaylist);
+    
+    return completePlaylist as Playlist;
   } catch (error) {
     console.error('Error creating playlist:', error);
     throw error;
@@ -59,23 +63,13 @@ export const getPlaylistById = async (
         `${config.spotifyServiceUrl}/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
         {
           withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-credentials': JSON.stringify(userCredentials)
-          }
+          headers: getSpotifyHeaders(userCredentials)
         }
       );
 
-      if (response.data && Array.isArray(response.data.tracks)) {
-        playlist.songs = response.data.tracks.map((track: any) => ({
-          name: track.songName,
-          artist: track.artist,
-        }));
-      } else {
-        playlist.songs = [];
-      }
-
-      return playlist;
+      const updatedPlaylist = convertSpotifyResponseToPlaylist(response.data, playlist);
+      return updatedPlaylist as Playlist;
+      
     } catch (spotifyError) {
       console.warn(`Playlist ${playlistId} exists in DB but not in Spotify`);
       playlist.songs = [];
@@ -105,23 +99,13 @@ export const getPlaylistsByUserId = async (
             `${config.spotifyServiceUrl}/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
             {
               withCredentials: true,
-              headers: {
-                'Content-Type': 'application/json',
-                'x-user-credentials': JSON.stringify(userCredentials)
-              }
+              headers: getSpotifyHeaders(userCredentials)
             }
           );
 
-          if (response.data && Array.isArray(response.data.tracks)) {
-            playlist.songs = response.data.tracks.map((track: any) => ({
-              name: track.songName,
-              artist: track.artist,
-            }));
-          } else {
-            playlist.songs = [];
-          }
-
-          return playlist;
+          const updatedPlaylist = convertSpotifyResponseToPlaylist(response.data, playlist);
+          return updatedPlaylist as Playlist;
+          
         } catch (error) {
           console.error(`Playlist ${playlist.id} no longer exists in Spotify:`, error);
           return null;
@@ -151,7 +135,7 @@ export const addSongToPlaylist = async (
       throw new ApiError(403, 'You do not have permission to modify this playlist');
     }
 
-    await axios.post(
+    const response = await axios.post(
       `${config.spotifyServiceUrl}/spotifyAPI/playlists/addSongs`,
       {
         playlistId: playlist.spotifyPlaylistId,
@@ -159,14 +143,13 @@ export const addSongToPlaylist = async (
       },
       {
         withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-credentials': JSON.stringify(userCredentials)
-        }
+        headers: getSpotifyHeaders(userCredentials)
       }
     );
-
-    return playlist;
+    
+    const updatedPlaylist = convertSpotifyResponseToPlaylist(response.data, playlist);
+    return updatedPlaylist as Playlist;
+    
   } catch (error) {
     console.error('Error adding song to playlist:', error);
     throw error;
@@ -176,7 +159,7 @@ export const addSongToPlaylist = async (
 export const getPlaylistSongs = async (
   playlistId: string,
   userCredentials: UserCredentials
-): Promise<any[]> => {
+): Promise<Song[]> => {
   try {
     const playlist = await PlaylistsDAL.getPlaylistById(playlistId);
     if (!playlist) {
@@ -187,10 +170,7 @@ export const getPlaylistSongs = async (
       `${config.spotifyServiceUrl}/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
       {
         withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-credentials': JSON.stringify(userCredentials)
-        }
+        headers: getSpotifyHeaders(userCredentials)
       }
     );
 
