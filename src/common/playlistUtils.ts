@@ -2,6 +2,7 @@ import {Song, UserCredentials} from '../models';
 import { getSpotifyService } from '../services/spotifyService';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from './parse';
+import { SpotifySong } from '../models/interfaces/Song';
 
 export const strictOrders: string = `prefer vibe over genres if they don't match.
  The new list must appear in this strict format: 
@@ -15,7 +16,7 @@ export const strictOrders: string = `prefer vibe over genres if they don't match
 export const createSongsList = async (
   userCreds: UserCredentials,
   aiMessage: string
-): Promise<Song[]> => {
+): Promise<SpotifySong[]> => {
   const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
 
   console.log(generatedPlaylist);
@@ -23,7 +24,7 @@ export const createSongsList = async (
   const songsList: Song[] = parseSongs(generatedPlaylist);
   const uniqueSongsList: Song[] = removeDuplicatedSongs(songsList);
 
-  const validatedSongs: Song[] = await validateSongsList(
+  const validatedSongs: SpotifySong[] = await validateSongsList(
     uniqueSongsList,
     userCreds
   );
