@@ -4,6 +4,7 @@ import * as UserPreferencesBL from '../bls/userPreferences';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from '../common/parse';
 import { createSongsList, strictOrders } from '../common/playlistUtils';
+import { SpotifySong } from '../models/interfaces/Song';
 
 export const createPlaylist = async (
   req: Request,
@@ -27,7 +28,7 @@ export const createPlaylist = async (
         playlist's occasion: ${activity}.
         ${strictOrders}.`;
 
-        const generatedPlaylist: Song[] = await createSongsList(
+        const generatedPlaylist: SpotifySong[] = await createSongsList(
           req.cookies.spotify_access_token,
           aiMessage
         );
@@ -78,7 +79,7 @@ export const refreshPlaylist = async (
           songs to replace: ${songsToReplace.join(', ')}.
           ${strictOrders}.`;
 
-        const generatedPlaylist: Song[] = await createSongsList(
+        const generatedPlaylist: SpotifySong[] = await createSongsList(
           req.cookies.spotify_access_token,
           aiMessage
         );
