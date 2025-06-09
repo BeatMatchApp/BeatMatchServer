@@ -21,6 +21,7 @@ export function getSpotifyService(): AxiosInstance {
         ? new https.Agent({ rejectUnauthorized: false })
         : new https.Agent({
             ca: fs.readFileSync('./spotify-cert.pem'),
+            checkServerIdentity: () => undefined,
           });
 
     spotifyService = axios.create({
