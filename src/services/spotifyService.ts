@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
 import https from 'https';
+import fs from 'fs';
 
 let spotifyService: AxiosInstance | null = null;
 
@@ -15,7 +16,12 @@ export function getSpotifyService(): AxiosInstance {
       throw new Error('spotifyServiceUrl is not defined in config.');
     }
 
-    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const httpsAgent =
+      config.nodeEnv !== 'production'
+        ? new https.Agent({ rejectUnauthorized: false })
+        : new https.Agent({
+            ca: fs.readFileSync('./spotify-cert.pem'),
+          });
 
     spotifyService = axios.create({
       baseURL: config.spotifyServiceUrl,
