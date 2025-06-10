@@ -22,8 +22,7 @@ const createServer = async (): Promise<Express> => {
     app.use(express.urlencoded({ extended: true }));
     app.use('/', routes);
 
-    app.use('/public', express.static('public'));
-    app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+    app.use(express.static(path.join(__dirname, 'public')));
 
     return app;
   } catch (error) {
