@@ -16,7 +16,12 @@ export function getSpotifyService(): AxiosInstance {
       throw new Error('spotifyServiceUrl is not defined in config.');
     }
 
-    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const httpsAgent =
+      config.nodeEnv !== 'production'
+        ? new https.Agent({ rejectUnauthorized: false })
+        : new https.Agent({
+            ca: fs.readFileSync('../SpotifyService/client-cert.pem'),
+          });
 
     spotifyService = axios.create({
       baseURL: config.spotifyServiceUrl,
