@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
 import https from 'https';
+import fs from 'fs';
 
 let spotifyService: AxiosInstance | null = null;
 
