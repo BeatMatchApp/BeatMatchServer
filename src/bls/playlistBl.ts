@@ -1,27 +1,24 @@
 import {Playlist, Song, UserCredentials} from "../models";
-import axios from 'axios';
-import config from '../config/config';
 import {PlaylistsDAL} from '../dal/playlists';
 import {v4 as uuidv4} from 'uuid';
 import {ApiError} from "../common/errors";
 import {convertSpotifyResponseToPlaylist} from "../common/playlistUtils";
 import {getSpotifyHeaders} from "../common/spotifyUtils";
-
-
+import {getSpotifyService} from '../services/spotifyService';
 
 export const createPlaylist = async (
   playlist: Partial<Playlist>,
   userCredentials: UserCredentials
 ): Promise<Playlist> => {
   try {
-    const spotifyResponse = await axios.post(
-      `${config.spotifyServiceUrl}/spotifyAPI/playlists/createPlaylist`,
+    const spotifyService = getSpotifyService();
+    const spotifyResponse = await spotifyService.post(
+      `/spotifyAPI/playlists/createPlaylist`,
       {
         playlistName: playlist.name,
         songs: playlist.songs
       },
       {
-        withCredentials: true,
         headers: getSpotifyHeaders(userCredentials)
       }
     );
@@ -59,10 +56,10 @@ export const getPlaylistById = async (
       return null;
     }
     try {
-      const response = await axios.get(
-        `${config.spotifyServiceUrl}/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
+      const spotifyService = getSpotifyService();
+      const response = await spotifyService.get(
+        `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
         {
-          withCredentials: true,
           headers: getSpotifyHeaders(userCredentials)
         }
       );
@@ -95,10 +92,10 @@ export const getPlaylistsByUserId = async (
             return playlist;
           }
 
-          const response = await axios.get(
-            `${config.spotifyServiceUrl}/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
+          const spotifyService = getSpotifyService();
+          const response = await spotifyService.get(
+            `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
             {
-              withCredentials: true,
               headers: getSpotifyHeaders(userCredentials)
             }
           );
@@ -107,7 +104,7 @@ export const getPlaylistsByUserId = async (
           return updatedPlaylist as Playlist;
           
         } catch (error) {
-          console.error(`Playlist ${playlist.id} no longer exists in Spotify:`, error);
+          console.error(`Failed to validate spotify playlist ${playlist.id}`, error);
           return null;
         }
       })
@@ -135,14 +132,14 @@ export const addSongToPlaylist = async (
       throw new ApiError(403, 'You do not have permission to modify this playlist');
     }
 
-    const response = await axios.post(
-      `${config.spotifyServiceUrl}/spotifyAPI/playlists/addSongs`,
+    const spotifyService = getSpotifyService();
+    const response = await spotifyService.post(
+      `/spotifyAPI/playlists/addSongs`,
       {
         playlistId: playlist.spotifyPlaylistId,
         songs: songs,
       },
       {
-        withCredentials: true,
         headers: getSpotifyHeaders(userCredentials)
       }
     );
@@ -166,10 +163,10 @@ export const getPlaylistSongs = async (
       throw new Error('Playlist not found');
     }
 
-    const response = await axios.get(
-      `${config.spotifyServiceUrl}/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
+    const spotifyService = getSpotifyService();
+    const response = await spotifyService.get(
+      `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
       {
-        withCredentials: true,
         headers: getSpotifyHeaders(userCredentials)
       }
     );
