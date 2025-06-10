@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import config from '../config/config';
 import https from 'https';
-import { Song } from '../models';
+import fs from 'fs';
 
 let spotifyService: AxiosInstance | null = null;
 
@@ -74,26 +74,6 @@ export const getSpotifyTokensByCode = async (
     }
   } catch (error) {
     console.error('Error fetching Spotify tokens:', error);
-    throw error;
-  }
-};
-
-export const validateSongsList = async (
-  songsList: Song[],
-  accessToken: string
-): Promise<Song[]> => {
-  try {
-    const response = await getSpotifyService().post(
-      '/spotifyAPI/playlists/validatePlaylist',
-      {
-        songsList,
-        accessToken,
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error('Error validating playlist', error);
     throw error;
   }
 };

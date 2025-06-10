@@ -15,10 +15,11 @@ const router = express.Router();
 router.use('/login', authMiddleware, loginHandler);
 router.use('/user', authMiddleware, userRoutes);
 router.use('/auth', authRoutes);
-router.use('/playlist', authMiddleware, playlistRoutes);
+router.use("/playlist", authMiddleware,playlistRoutes);
 router.use('/userPreferences', authMiddleware, userPreferencesRoutes);
 router.use('/meta', authMiddleware, metaRoute);
 router.use('/musicalAIConsultant', authMiddleware, MusicalAIRoutes);
+router.use('/spotify', spotifyRoutes);
 router.use('/callback', callbackHandler);
 
 export default router;

@@ -13,7 +13,7 @@ export const refreshAuthToken = async (req: Request, res: Response) => {
 
     req.cookies[ACCESS_COOKIE] = newAccessToken;
   } catch (error) {
-    res.status(401).json({ error: "Failed to refresh spotify's access token" });
+    return res.status(401).json({ error: "Failed to refresh spotify's access token" });
   }
 };
 

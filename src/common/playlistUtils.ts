@@ -1,5 +1,5 @@
-import { Song } from '../models';
-import { validateSongsList } from '../services/spotifyService';
+import {Playlist, Song, UserCredentials} from '../models';
+import { getSpotifyService } from '../services/spotifyService';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from './parse';
 import { SpotifySong } from '../models/interfaces/Song';
@@ -14,17 +14,16 @@ export const strictOrders: string = `prefer vibe over genres if they don't match
  Only return real, existing songs that are available on Spotify`;
 
 export const createSongsList = async (
-  spotifyToken: string,
+  userCreds: UserCredentials,
   aiMessage: string
 ): Promise<SpotifySong[]> => {
   const generatedPlaylist = await openAiService.getAIResponse(aiMessage);
-
   const songsList: Song[] = parseSongs(generatedPlaylist);
   const uniqueSongsList: Song[] = removeDuplicatedSongs(songsList);
 
   const validatedSongs: SpotifySong[] = await validateSongsList(
     uniqueSongsList,
-    spotifyToken
+    userCreds
   );
 
   return validatedSongs;
@@ -43,4 +42,47 @@ const removeDuplicatedSongs = (songsList: Song[]): Song[] => {
   });
 
   return noDuplicatedSongsList;
+};
+
+const validateSongsList = async (
+  songsList: Song[],
+  userCreds: UserCredentials
+): Promise<Song[]> => {
+  try {
+    const response = await getSpotifyService().post(
+      '/spotifyAPI/playlists/validatePlaylist',
+        {
+          songsList,
+        },
+        {headers:{
+            'x-user-credentials': JSON.stringify(userCreds)
+        }}
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('Error validating playlist', error);
+    throw error;
+  }
+};
+
+
+export const convertSpotifyResponseToPlaylist = (spotifyData, basePlaylist: Partial<Playlist>): Partial<Playlist> => {
+  const updatedPlaylist = { ...basePlaylist };
+
+  // Map tracks if they exist
+  if (spotifyData && Array.isArray(spotifyData.tracks)) {
+    updatedPlaylist.songs = spotifyData.tracks.map((track: Song) => ({
+      name: track.name,
+      artist: track.artist,
+    }));
+  }
+
+  // Map other Spotify fields
+  if (spotifyData) {
+    updatedPlaylist.url = spotifyData.url || updatedPlaylist.url || '';
+    updatedPlaylist.imageUrl = spotifyData.imageUrl || updatedPlaylist.imageUrl || '';
+  }
+
+  return updatedPlaylist;
 };

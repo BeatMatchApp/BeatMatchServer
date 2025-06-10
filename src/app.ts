@@ -13,7 +13,7 @@ const createServer = async (): Promise<Express> => {
 
     app.use(cookieParser());
     app.use(
-      cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
+        cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
     );
 
     app.use('/spotify', spotifyProxyRoutes);

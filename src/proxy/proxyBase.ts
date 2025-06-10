@@ -1,7 +1,6 @@
 import { createProxyMiddleware, loggerPlugin } from 'http-proxy-middleware';
-import { RequestHandler } from 'express';
+import {NextFunction, RequestHandler, Request, Response} from 'express';
 import authMiddleware from '../middlewares/authMiddleware';
-import https from 'https';
 
 export type ProxyConfig = {
   target: string;
@@ -18,29 +17,42 @@ export class BaseProxy {
     };
   }
 
-  protected createProxyMiddleware(config: ProxyConfig): RequestHandler {
-    const { target, pathRewriteBase = '' } = config;
+    protected createProxyMiddleware(config: ProxyConfig): RequestHandler[] {
+        const { target, pathRewriteBase = '', } = config;
+        const addCredentialsMiddleware = (req: Request, res: Response, next: NextFunction) => {
+            if (req.headers['x-user-credentials']) {
+                delete req.headers['x-user-credentials'];
+            }
 
-    return createProxyMiddleware({
-      target,
-      changeOrigin: true,
-      secure: false,
-      pathRewrite: (path, req) => path.replace(new RegExp(pathRewriteBase), ''),
-      plugins: [loggerPlugin],
-    });
-  }
+            if (req.userCredentials) {
+                req.headers['x-user-credentials'] = JSON.stringify(req.userCredentials);
+            }
 
-  public createProxy(config: ProxyConfig): RequestHandler[] {
-    const proxyConfig = this.getProxyConfig(config);
-    const middlewareStack: RequestHandler[] = [];
+            next();
+        };
 
-    if (proxyConfig.applyAuth) {
-      middlewareStack.push(authMiddleware);
+        const proxy = createProxyMiddleware({
+            target,
+            changeOrigin: true,
+            secure: false,
+            pathRewrite: (path, req) => path.replace(new RegExp(pathRewriteBase), ''),
+            plugins: [loggerPlugin]
+        });
+
+        return [addCredentialsMiddleware, proxy];
     }
 
-    const proxy = this.createProxyMiddleware(proxyConfig);
-    middlewareStack.push(proxy);
+    public createProxy(config: ProxyConfig): RequestHandler[] {
+        const proxyConfig = this.getProxyConfig(config);
+        const middlewareStack: RequestHandler[] = [];
 
-    return middlewareStack;
-  }
+        if (proxyConfig.applyAuth) {
+            middlewareStack.push(authMiddleware);
+        }
+
+        const proxyMiddlewares = this.createProxyMiddleware(proxyConfig);
+        middlewareStack.push(...proxyMiddlewares);
+
+        return middlewareStack;
+    }
 }
