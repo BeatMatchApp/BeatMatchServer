@@ -4,6 +4,7 @@ import spotifyProxyRoutes from './routes/spotifyRoutes';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ const createServer = async (): Promise<Express> => {
 
     app.use(cookieParser());
     app.use(
-        cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
+      cors({ origin: process.env.BEATMATCH_CLIENT_URL, credentials: true })
     );
 
     app.use('/spotify', spotifyProxyRoutes);
@@ -22,6 +23,7 @@ const createServer = async (): Promise<Express> => {
     app.use('/', routes);
 
     app.use('/public', express.static('public'));
+    app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 
     return app;
   } catch (error) {
