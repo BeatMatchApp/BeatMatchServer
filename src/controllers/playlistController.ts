@@ -147,3 +147,28 @@ export const getPlaylistSongs = async (req: Request, res: Response): Promise<voi
         }
     }
 };
+
+export const updatePlaylist = async (req: Request, res: Response): Promise<void> => {
+    try {
+        if (!req.user) {
+            throw new ApiError(401, 'Unauthorized');
+        }
+
+        const { playlistId } = req.params;
+        const { songs } = req.body;
+
+        if (!playlistId || !songs) {
+            throw new ApiError(400, 'Missing required fields');
+        }
+
+        const updatedPlaylist = await playlistBl.updatePlaylist(playlistId, songs, req.user);
+        res.json(updatedPlaylist);
+    } catch (error) {
+        console.error('Error updating playlist:', error);
+        if (error instanceof ApiError) {
+            res.status(error.statusCode).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'An error occurred while updating the playlist.' });
+        }
+    }
+};

@@ -181,3 +181,44 @@ export const getPlaylistSongs = async (
     throw error;
   }
 };
+
+export const updatePlaylist = async (
+  playlistId: string,
+  songs: Song[],
+  userCredentials: UserCredentials
+): Promise<Playlist> => {
+  try {
+    const playlist = await PlaylistsDAL.getPlaylistById(playlistId);
+    if (!playlist) {
+      throw new Error('Playlist not found');
+    }
+
+    if (playlist.userId !== userCredentials.id) {
+      throw new ApiError(403, 'You do not have permission to modify this playlist');
+    }
+
+    const spotifyService = getSpotifyService();
+    await spotifyService.post(
+      `/spotifyAPI/playlists/updatePlaylist`,
+      {
+        playlistId: playlist.spotifyPlaylistId,
+        songs: songs,
+      },
+      {
+        headers: getSpotifyHeaders(userCredentials)
+      }
+    );
+
+    const updatedPlaylist = await PlaylistsDAL.updatePlaylist(playlistId, {
+      lastUpdatedDate: new Date()
+    });
+    
+    return {
+        ...updatedPlaylist,
+        songs: songs
+    }
+  } catch (error) {
+    console.error('Error updating playlist:', error);
+    throw error;
+  }
+};
