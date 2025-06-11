@@ -13,7 +13,7 @@ export const createPlaylist = async (
   try {
     const { mood, event } = req.body;
 
-    if (!mood || !event || !req.user) {
+    if (!req.user) {
       res.status(400).json({ message: "missing user's required information" });
     } else {
       const preferencesDetails: UserPreferences | undefined =
@@ -24,8 +24,8 @@ export const createPlaylist = async (
         favorite artists: ${preferencesDetails.artists.join(', ')}
         favorite genres: ${preferencesDetails.genres.join(', ')}
         favorite song: ${preferencesDetails.song}
-        plalist's vibe: ${mood}
-        playlist's occasion: ${event}.
+        ${mood ? `playlist's vibe: ${mood}` : ''}
+        ${event ? `playlist's occasion: ${event}` : ''}
         ${strictOrders}.`;
 
         const generatedPlaylist: SpotifySong[] = await createSongsList(
