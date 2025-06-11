@@ -24,8 +24,6 @@ const createServer = async (): Promise<Express> => {
 
     app.use('/public', express.static('public'));
 
-    app.use(express.static(path.join(__dirname, 'public')));
-
     return app;
   } catch (error) {
     throw new Error(`Error initializing app: ${error.message}`);
