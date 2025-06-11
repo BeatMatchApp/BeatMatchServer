@@ -24,8 +24,8 @@ export const createPlaylist = async (
         favorite artists: ${preferencesDetails.artists.join(', ')}
         favorite genres: ${preferencesDetails.genres.join(', ')}
         favorite song: ${preferencesDetails.song}
-        plalist's vibe: ${mood}
-        playlist's occasion: ${event}.
+        ${mood ? `playlist's vibe: ${mood}` : ''}
+        ${event ? `playlist's occasion: ${event}` : ''}
         ${strictOrders}.`;
 
         const generatedPlaylist: SpotifySong[] = await createSongsList(
