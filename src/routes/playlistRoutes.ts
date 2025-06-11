@@ -8,5 +8,6 @@ router.get('/', playlistController.getUserPlaylists);
 router.get('/:playlistId', playlistController.getPlaylist);
 router.post('/:playlistId/songs', playlistController.addSongsToPlaylist);
 router.get('/:playlistId/songs', playlistController.getPlaylistSongs);
+router.put('/:playlistId', playlistController.updatePlaylist);
 
 export default router;
