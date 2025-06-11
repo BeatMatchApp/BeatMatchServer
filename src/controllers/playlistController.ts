@@ -24,8 +24,8 @@ export const createPlaylist = async (
         description: description || '',
         name,
         songs,
-        mood,
-        event,
+        mood: mood || '',
+        event: event || '',
       },
       req.user
     );
@@ -136,11 +136,9 @@ export const addSongsToPlaylist = async (
     if (error instanceof ApiError) {
       res.status(error.statusCode).json({ error: error.message });
     } else {
-      res
-        .status(500)
-        .json({
-          error: 'An error occurred while adding the song to the playlist.',
-        });
+      res.status(500).json({
+        error: 'An error occurred while adding the song to the playlist.',
+      });
     }
   }
 };
@@ -178,11 +176,9 @@ export const getPlaylistSongs = async (
     if (error instanceof ApiError) {
       res.status(error.statusCode).json({ error: error.message });
     } else {
-      res
-        .status(500)
-        .json({
-          error: 'An error occurred while retrieving the playlist songs.',
-        });
+      res.status(500).json({
+        error: 'An error occurred while retrieving the playlist songs.',
+      });
     }
   }
 };
