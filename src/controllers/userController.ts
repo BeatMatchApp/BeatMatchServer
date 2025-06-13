@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import * as UserBl from "../bls/userBl";
-import {USER_COOKIE} from "../consts/general";
+import {ACCESS_COOKIE, REFRESH_COOKIE, USER_COOKIE} from "../consts/general";
 import { UsersDAL } from "../dal/users";
 
 export interface UserDetails {
@@ -59,6 +59,8 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = (_req: Request, res: Response) => {
+  res.clearCookie(ACCESS_COOKIE);
+  res.clearCookie(REFRESH_COOKIE);
   res.clearCookie(USER_COOKIE);
   return res.status(200).json({ message: "Logged out successfully" });
 };
