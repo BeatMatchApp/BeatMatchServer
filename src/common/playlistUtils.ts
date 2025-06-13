@@ -70,19 +70,17 @@ const validateSongsList = async (
 export const convertSpotifyResponseToPlaylist = (spotifyData, basePlaylist: Partial<Playlist>): Partial<Playlist> => {
   const updatedPlaylist = { ...basePlaylist };
 
-  // Map tracks if they exist
-  if (spotifyData && Array.isArray(spotifyData.tracks)) {
+  if(!spotifyData)
+    return updatedPlaylist;
+
+  if (Array.isArray(spotifyData.tracks) && spotifyData.tracks.length > 0) {
     updatedPlaylist.songs = spotifyData.tracks.map((track: Song) => ({
       name: track.name,
       artist: track.artist,
     }));
   }
 
-  // Map other Spotify fields
-  if (spotifyData) {
-    updatedPlaylist.url = spotifyData.url || updatedPlaylist.url || '';
-    updatedPlaylist.imageUrl = spotifyData.imageUrl || updatedPlaylist.imageUrl || '';
-  }
-
+  updatedPlaylist.url = spotifyData.url || updatedPlaylist.url || '';
+  updatedPlaylist.imageUrl = spotifyData.imageUrl || updatedPlaylist.imageUrl || '';
   return updatedPlaylist;
 };
