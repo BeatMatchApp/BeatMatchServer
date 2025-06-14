@@ -183,27 +183,74 @@ export const getPlaylistSongs = async (
   }
 };
 
-export const updatePlaylist = async (req: Request, res: Response): Promise<void> => {
-    try {
-        if (!req.user) {
-            throw new ApiError(401, 'Unauthorized');
-        }
-
-        const { playlistId } = req.params;
-        const { songs } = req.body;
-
-        if (!playlistId || !songs) {
-            throw new ApiError(400, 'Missing required fields');
-        }
-
-        const updatedPlaylist = await playlistBl.updatePlaylist(playlistId, songs, req.user);
-        res.json(updatedPlaylist);
-    } catch (error) {
-        console.error('Error updating playlist:', error);
-        if (error instanceof ApiError) {
-            res.status(error.statusCode).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'An error occurred while updating the playlist.' });
-        }
+export const updatePlaylist = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      throw new ApiError(401, 'Unauthorized');
     }
+
+    const { playlistId } = req.params;
+    const { songs } = req.body;
+
+    if (!playlistId || !songs) {
+      throw new ApiError(400, 'Missing required fields');
+    }
+
+    const updatedPlaylist = await playlistBl.updatePlaylist(
+      playlistId,
+      songs,
+      req.user
+    );
+    res.json(updatedPlaylist);
+  } catch (error) {
+    console.error('Error updating playlist:', error);
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res
+        .status(500)
+        .json({ error: 'An error occurred while updating the playlist.' });
+    }
+  }
+};
+
+export const deletePlaylist = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      throw new ApiError(401, 'Unauthorized');
+    }
+
+    const { playlistId, spotifyPlaylistId } = req.body;
+
+    if (!playlistId || !spotifyPlaylistId) {
+      throw new ApiError(400, 'Missing required fields');
+    }
+
+    const deletedPlaylist = await playlistBl.deletePlaylist(
+      playlistId,
+      spotifyPlaylistId,
+      req.user
+    );
+
+    if (deletedPlaylist) {
+      res.json(deletedPlaylist);
+    } else {
+      res.status(400).json({ message: 'could not delete playlist' });
+    }
+  } catch (error) {
+    console.error('Error deleting playlist:', error);
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res
+        .status(500)
+        .json({ error: 'An error occurred while deleting the playlist.' });
+    }
+  }
 };
