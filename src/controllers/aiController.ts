@@ -51,12 +51,7 @@ export const refreshPlaylist = async (
   try {
     const playlistDetails: PlaylistDetails = req.body;
 
-    if (
-      !playlistDetails.mood ||
-      !playlistDetails.event ||
-      !req.user ||
-      !playlistDetails.songs
-    ) {
+    if (!req.user || !playlistDetails.songs) {
       res.status(400).json({ message: 'missing required information' });
     } else {
       const preferencesDetails: UserPreferences | undefined =
@@ -76,8 +71,16 @@ export const refreshPlaylist = async (
         const aiMessage = `Please replace the 'songs to replace' with songs that fit to my following critiria: 
           favorite artists: ${preferencesDetails.artists.join(', ')}
           favorite genres: ${preferencesDetails.genres.join(', ')}
-          plalist's vibe: ${playlistDetails.mood}
-          playlist's occasion: ${playlistDetails.event}
+          ${
+            playlistDetails.mood
+              ? `playlist's vibe: ${playlistDetails.mood}`
+              : ''
+          }
+          ${
+            playlistDetails.event
+              ? `playlist's occasion: ${playlistDetails.event}`
+              : ''
+          }
           current songs list: ${allSongNames.join(', ')}
           songs to replace: ${songsToReplace.join(', ')}.
           ${additionalReq ? `Additional requests: ${additionalReq}` : ''}
