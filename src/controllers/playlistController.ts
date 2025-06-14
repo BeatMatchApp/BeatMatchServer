@@ -241,7 +241,7 @@ export const deletePlaylist = async (
     if (deletedPlaylist) {
       res.json(deletedPlaylist);
     } else {
-      res.status(400).json({ message: 'could not delete plylist' });
+      res.status(400).json({ message: 'could not delete playlist' });
     }
   } catch (error) {
     console.error('Error deleting playlist:', error);
