@@ -54,28 +54,23 @@ export const getPlaylistById = async (
 ): Promise<Playlist | null> => {
   try {
     const playlist = await PlaylistsDAL.getPlaylistById(playlistId);
-
     if (!playlist) {
       return null;
     }
     try {
-      const spotifyService = getSpotifyService();
-      const response = await spotifyService.get(
+      const response = await getSpotifyService().get(
         `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
         {
           headers: getSpotifyHeaders(userCredentials),
         }
       );
-
-      const updatedPlaylist = convertSpotifyResponseToPlaylist(
+      return convertSpotifyResponseToPlaylist(
         response.data,
         playlist
-      );
-      return updatedPlaylist as Playlist;
+      ) as Playlist;
     } catch (spotifyError) {
-      console.warn(`Playlist ${playlistId} exists in DB but not in Spotify`);
-      playlist.songs = [];
-      return playlist;
+      console.log(`Error fetching playlist from Spotify:`, spotifyError);
+      return null;
     }
   } catch (error) {
     console.error('Error getting playlist:', error);
@@ -88,41 +83,68 @@ export const getPlaylistsByUserId = async (
   userCredentials: UserCredentials
 ): Promise<Playlist[]> => {
   try {
-    const playlists = await PlaylistsDAL.getPlaylistsByUser(userId);
-    const validatedPlaylists = await Promise.all(
-      playlists.map(async (playlist) => {
-        try {
-          if (!playlist.spotifyPlaylistId) {
-            playlist.songs = [];
-            return playlist;
-          }
+    const dbPlaylists = await PlaylistsDAL.getPlaylistsByUser(userId);
+    if (dbPlaylists.length === 0) return [];
+    let spotifyPlaylistsMap = new Map();
 
-          const spotifyService = getSpotifyService();
-          const response = await spotifyService.get(
-            `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
-            {
-              headers: getSpotifyHeaders(userCredentials),
-            }
-          );
-
-          const updatedPlaylist = convertSpotifyResponseToPlaylist(
-            response.data,
-            playlist
-          );
-          return updatedPlaylist as Playlist;
-        } catch (error) {
-          console.error(
-            `Failed to validate spotify playlist ${playlist.id}`,
-            error
-          );
-          return null;
+    try {
+      const spotifyResponse = await getSpotifyService().get(
+        '/spotifyAPI/playlists/',
+        {
+          headers: getSpotifyHeaders(userCredentials),
         }
-      })
-    );
+      );
+      if (spotifyResponse.data) {
+        spotifyPlaylistsMap = new Map(
+          spotifyResponse.data
+            .filter((playlist) => playlist && playlist.id)
+            .map((playlist) => [playlist.id, playlist])
+        );
+      }
+    } catch (spotifyError) {
+      console.error('Error fetching Spotify playlists:', spotifyError);
+      return [];
+    }
 
-    return validatedPlaylists.filter(
-      (playlist) => playlist !== null
-    ) as Playlist[];
+    const playlistDeletionPromises: Promise<any>[] = [];
+    const validatedPlaylists = dbPlaylists.reduce((valid, dbPlaylist) => {
+      if (
+        !dbPlaylist.spotifyPlaylistId ||
+        !spotifyPlaylistsMap.has(dbPlaylist.spotifyPlaylistId)
+      ) {
+        if (dbPlaylist.spotifyPlaylistId) {
+          playlistDeletionPromises.push(
+            PlaylistsDAL.deletePlaylist(dbPlaylist.id).catch((error) =>
+              console.error(
+                `Failed to delete playlist ${dbPlaylist.id}:`,
+                error
+              )
+            )
+          );
+        }
+        return valid;
+      }
+      const spotifyPlaylist = spotifyPlaylistsMap.get(
+        dbPlaylist.spotifyPlaylistId
+      );
+      valid.push(
+        convertSpotifyResponseToPlaylist(
+          spotifyPlaylist,
+          dbPlaylist
+        ) as Playlist
+      );
+      return valid;
+    }, [] as Playlist[]);
+
+    if (playlistDeletionPromises.length > 0) {
+      Promise.all(playlistDeletionPromises).then(() => {
+        console.log(
+          `Completed DB deletion of ${playlistDeletionPromises.length} invalid playlists`
+        );
+      });
+    }
+
+    return validatedPlaylists;
   } catch (error) {
     console.error('Error getting playlists for user:', error);
     throw error;
