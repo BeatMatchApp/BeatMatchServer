@@ -1,10 +1,10 @@
-import {Playlist, Song, UserCredentials} from "../models";
-import {PlaylistsDAL} from '../dal/playlists';
-import {v4 as uuidv4} from 'uuid';
-import {ApiError} from "../common/errors";
-import {convertSpotifyResponseToPlaylist} from "../common/playlistUtils";
-import {getSpotifyHeaders} from "../common/spotifyUtils";
-import {getSpotifyService} from '../services/spotifyService';
+import { Playlist, Song, UserCredentials } from '../models';
+import { PlaylistsDAL } from '../dal/playlists';
+import { v4 as uuidv4 } from 'uuid';
+import { ApiError } from '../common/errors';
+import { convertSpotifyResponseToPlaylist } from '../common/playlistUtils';
+import { getSpotifyHeaders } from '../common/spotifyUtils';
+import { getSpotifyService } from '../services/spotifyService';
 
 export const createPlaylist = async (
   playlist: Partial<Playlist>,
@@ -16,10 +16,10 @@ export const createPlaylist = async (
       `/spotifyAPI/playlists/createPlaylist`,
       {
         playlistName: playlist.name,
-        songs: playlist.songs
+        songs: playlist.songs,
       },
       {
-        headers: getSpotifyHeaders(userCredentials)
+        headers: getSpotifyHeaders(userCredentials),
       }
     );
 
@@ -36,8 +36,11 @@ export const createPlaylist = async (
     };
 
     const createdPlaylist = await PlaylistsDAL.createPlaylist(playlistWithId);
-    const completePlaylist = convertSpotifyResponseToPlaylist(spotifyResponse.data, createdPlaylist);
-    
+    const completePlaylist = convertSpotifyResponseToPlaylist(
+      spotifyResponse.data,
+      createdPlaylist
+    );
+
     return completePlaylist as Playlist;
   } catch (error) {
     console.error('Error creating playlist:', error);
@@ -60,13 +63,15 @@ export const getPlaylistById = async (
       const response = await spotifyService.get(
         `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
         {
-          headers: getSpotifyHeaders(userCredentials)
+          headers: getSpotifyHeaders(userCredentials),
         }
       );
 
-      const updatedPlaylist = convertSpotifyResponseToPlaylist(response.data, playlist);
+      const updatedPlaylist = convertSpotifyResponseToPlaylist(
+        response.data,
+        playlist
+      );
       return updatedPlaylist as Playlist;
-      
     } catch (spotifyError) {
       console.warn(`Playlist ${playlistId} exists in DB but not in Spotify`);
       playlist.songs = [];
@@ -96,21 +101,28 @@ export const getPlaylistsByUserId = async (
           const response = await spotifyService.get(
             `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
             {
-              headers: getSpotifyHeaders(userCredentials)
+              headers: getSpotifyHeaders(userCredentials),
             }
           );
 
-          const updatedPlaylist = convertSpotifyResponseToPlaylist(response.data, playlist);
+          const updatedPlaylist = convertSpotifyResponseToPlaylist(
+            response.data,
+            playlist
+          );
           return updatedPlaylist as Playlist;
-          
         } catch (error) {
-          console.error(`Failed to validate spotify playlist ${playlist.id}`, error);
+          console.error(
+            `Failed to validate spotify playlist ${playlist.id}`,
+            error
+          );
           return null;
         }
       })
     );
 
-    return validatedPlaylists.filter(playlist => playlist !== null) as Playlist[];
+    return validatedPlaylists.filter(
+      (playlist) => playlist !== null
+    ) as Playlist[];
   } catch (error) {
     console.error('Error getting playlists for user:', error);
     throw error;
@@ -129,7 +141,10 @@ export const addSongToPlaylist = async (
     }
 
     if (playlist.userId !== userCredentials.id) {
-      throw new ApiError(403, 'You do not have permission to modify this playlist');
+      throw new ApiError(
+        403,
+        'You do not have permission to modify this playlist'
+      );
     }
 
     const spotifyService = getSpotifyService();
@@ -140,13 +155,15 @@ export const addSongToPlaylist = async (
         songs: songs,
       },
       {
-        headers: getSpotifyHeaders(userCredentials)
+        headers: getSpotifyHeaders(userCredentials),
       }
     );
-    
-    const updatedPlaylist = convertSpotifyResponseToPlaylist(response.data, playlist);
+
+    const updatedPlaylist = convertSpotifyResponseToPlaylist(
+      response.data,
+      playlist
+    );
     return updatedPlaylist as Playlist;
-    
   } catch (error) {
     console.error('Error adding song to playlist:', error);
     throw error;
@@ -167,7 +184,7 @@ export const getPlaylistSongs = async (
     const response = await spotifyService.get(
       `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
       {
-        headers: getSpotifyHeaders(userCredentials)
+        headers: getSpotifyHeaders(userCredentials),
       }
     );
 
@@ -194,7 +211,10 @@ export const updatePlaylist = async (
     }
 
     if (playlist.userId !== userCredentials.id) {
-      throw new ApiError(403, 'You do not have permission to modify this playlist');
+      throw new ApiError(
+        403,
+        'You do not have permission to modify this playlist'
+      );
     }
 
     const spotifyService = getSpotifyService();
@@ -205,20 +225,50 @@ export const updatePlaylist = async (
         songs: songs,
       },
       {
-        headers: getSpotifyHeaders(userCredentials)
+        headers: getSpotifyHeaders(userCredentials),
       }
     );
 
     const updatedPlaylist = await PlaylistsDAL.updatePlaylist(playlistId, {
-      lastUpdatedDate: new Date()
+      lastUpdatedDate: new Date(),
     });
-    
+
     return {
-        ...updatedPlaylist,
-        songs: songs
-    }
+      ...updatedPlaylist,
+      songs: songs,
+    };
   } catch (error) {
     console.error('Error updating playlist:', error);
+    throw error;
+  }
+};
+
+export const deletePlaylist = async (
+  playlistId: string,
+  spotifyPlaylistId: string,
+  userCredentials: UserCredentials
+): Promise<number | null> => {
+  try {
+    const spotifyService = getSpotifyService();
+    const spotifyResponse = await spotifyService.post(
+      `/spotifyAPI/playlists/deletePlaylist`,
+      {
+        spotifyPlaylistId,
+      },
+      {
+        headers: getSpotifyHeaders(userCredentials),
+      }
+    );
+
+    if (spotifyResponse.data?.success) {
+      const deletedPlaylistId = await PlaylistsDAL.deletePlaylist(playlistId);
+
+      return deletedPlaylistId;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error deleting playlist:', error);
     throw error;
   }
 };
