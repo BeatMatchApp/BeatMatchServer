@@ -54,8 +54,8 @@ export const getPlaylistById = async (
     if (!playlist) {
       return null;
     }
-
     try {
+
       const response = await  getSpotifyService().get(
           `/spotifyAPI/playlists/${playlist.spotifyPlaylistId}`,
           {
@@ -65,14 +65,7 @@ export const getPlaylistById = async (
       return convertSpotifyResponseToPlaylist(response.data, playlist) as Playlist;
 
     } catch (spotifyError) {
-      console.warn(`Playlist ${playlistId} exists in DB but not in Spotify. Deleting from DB.`);
-
-      try {
-        await PlaylistsDAL.deletePlaylist(playlistId);
-        console.log(`Successfully deleted playlist ${playlistId} from database`);
-      } catch (deleteError) {
-        console.error(`Failed to delete playlist ${playlistId} from database:`, deleteError);
-      }
+      console.log(`Error fetching playlist from Spotify:`, spotifyError);
       return null;
     }
   } catch (error) {

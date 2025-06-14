@@ -5,7 +5,7 @@ export const loginHandler = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  if (!req.user || !req.user.id) {
+  if (!req.user?.id) {
     res.status(401).json({ message: 'Unauthorized' });
     return;
   }
