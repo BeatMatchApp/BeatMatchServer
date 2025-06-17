@@ -5,7 +5,7 @@ import { parseSongs } from './parse';
 import { SpotifySong } from '../models/interfaces/Song';
 
 export const strictOrders: string = `
-you can add songs that are not in the user's favorite artists or genres, but only if they fit the vibe of the playlist.
+you can add songs that are not in the user's favorite artists or genres, but only if they fit other criterias of the playlist.
 add max 10 songs of the user's favorite artists.
 prefer vibe over genres if they don't match.
  The new list must appear in this strict format: 
