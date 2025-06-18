@@ -1,10 +1,13 @@
-import {Playlist, Song, UserCredentials} from '../models';
+import { Playlist, Song, UserCredentials } from '../models';
 import { getSpotifyService } from '../services/spotifyService';
 import * as openAiService from '../services/openAiService';
 import { parseSongs } from './parse';
 import { SpotifySong } from '../models/interfaces/Song';
 
-export const strictOrders: string = `prefer vibe over genres if they don't match.
+export const strictOrders: string = `
+you can add songs that are not in the user's favorite artists or genres, but only if they fit other criterias of the playlist.
+add max 10 songs of the user's favorite artists.
+prefer vibe over genres if they don't match.
  The new list must appear in this strict format: 
  song name - artist
  Always song name first, then artist.
@@ -51,12 +54,14 @@ const validateSongsList = async (
   try {
     const response = await getSpotifyService().post(
       '/spotifyAPI/playlists/validatePlaylist',
-        {
-          songsList,
+      {
+        songsList,
+      },
+      {
+        headers: {
+          'x-user-credentials': JSON.stringify(userCreds),
         },
-        {headers:{
-            'x-user-credentials': JSON.stringify(userCreds)
-        }}
+      }
     );
 
     return response.data;
@@ -66,12 +71,13 @@ const validateSongsList = async (
   }
 };
 
-
-export const convertSpotifyResponseToPlaylist = (spotifyData, basePlaylist: Partial<Playlist>): Partial<Playlist> => {
+export const convertSpotifyResponseToPlaylist = (
+  spotifyData,
+  basePlaylist: Partial<Playlist>
+): Partial<Playlist> => {
   const updatedPlaylist = { ...basePlaylist };
 
-  if(!spotifyData)
-    return updatedPlaylist;
+  if (!spotifyData) return updatedPlaylist;
 
   if (Array.isArray(spotifyData.tracks) && spotifyData.tracks.length > 0) {
     updatedPlaylist.songs = spotifyData.tracks.map((track: Song) => ({
@@ -81,6 +87,7 @@ export const convertSpotifyResponseToPlaylist = (spotifyData, basePlaylist: Part
   }
 
   updatedPlaylist.url = spotifyData.url || updatedPlaylist.url || '';
-  updatedPlaylist.imageUrl = spotifyData.imageUrl || updatedPlaylist.imageUrl || '';
+  updatedPlaylist.imageUrl =
+    spotifyData.imageUrl || updatedPlaylist.imageUrl || '';
   return updatedPlaylist;
 };
